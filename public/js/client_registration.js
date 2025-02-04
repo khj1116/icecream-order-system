@@ -10,6 +10,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const password = document.getElementById("password").value;
         const confirm_password = document.getElementById("confirm_password").value;
 
+        // 데이터 검증
+        if (!username || !user_id || !password || !confirm_password) {
+            alert("모든 필드를 입력해주세요.");
+            return;
+        }
+
+
         const userData = { username, user_id, password, confirm_password };
 
         try {
@@ -24,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (response.ok) {
                 registerMessage.textContent = "✅ 회원가입 성공! 로그인 페이지로 이동하세요.";
                 registerMessage.style.color = "green";
-                setTimeout(() => window.location.href = "/login.html", 2000);
+                
             } else {
                 registerMessage.textContent = "❌ " + data.error;
                 registerMessage.style.color = "red";

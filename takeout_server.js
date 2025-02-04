@@ -81,16 +81,23 @@ app.post('/login', async (req, res) => {
 });
 
 // 회원가입 엔드포인트 추가
-app.post('/register', async (req, res) => {
-    const { username, user_id, password } = req.body;
+app.post('/api/register', async (req, res) => {
+    const { username, user_id, password, confirm_password } = req.body;
 
-    if (!username || !user_id || !password) {
+    if (!username || !user_id || !password || !confirm_password) {
         return res.status(400).json({ success: false, message: "모든 필드를 입력해주세요." });
     }
 
+    // 비밀번호 확인
+    if (password !== confirm_password) {
+        return res.status(400).json({ success: false, message: "비밀번호가 일치하지 않습니다." });
+    }
+
+
     try {
-        // 비밀번호 암호화
+        // 비밀번호 암호화(해싱)
         const hashedPassword = await bcrypt.hash(password, saltRounds);
+        //MySQL 저장
         const sql = "INSERT INTO users (username, user_id, password) VALUES (?, ?, ?)";
 
         connection.query(sql, [username, user_id, hashedPassword], (err, results) => {
