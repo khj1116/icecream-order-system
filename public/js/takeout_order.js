@@ -41,8 +41,35 @@ loginForm.addEventListener('submit', async (event) => {
 
     });
 
-        // 비회원 주문 버튼 클릭 시 현장 주문 페이지로 이동
-        const guestOrderButton = document.getElementById("guestOrderButton");
-        guestOrderButton.addEventListener("click", () => {
-            window.location.href = "http://localhost:5000/order";
-        });
+    // 비회원 주문 버튼 클릭 시 현장 주문 페이지로 이동
+    const guestOrderButton = document.getElementById("guestOrderButton");
+    guestOrderButton.addEventListener("click", () => {
+        window.location.href = "http://localhost:5000/order";
+    });
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+        // 회원가입 버튼 클릭 시 client_registration.html로 이동
+        const registerButton = document.getElementById("client_registration");
+        if (registerButton) {
+            registerButton.addEventListener("click", (event) => {
+                event.preventDefault();
+                window.location.href = "/client_registration.html";  // 회원가입 페이지로 이동
+            });
+        }
+    });
+    //로그인 유지 기능을 프론트 엔드에 추가
+    document.addEventListener("DOMContentLoaded", async () => {
+        try {
+            const response = await fetch('/check-login', { credentials: 'include' });
+            const data = await response.json();
+            if (data.success) {
+                document.querySelector(".login-box h2").textContent = `👋 안녕하세요, ${data.user.username}님!`;
+            }
+        } catch (error) {
+            console.error("로그인 상태 확인 오류:", error);
+        }
+    });
+    
+    
+        

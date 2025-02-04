@@ -38,7 +38,11 @@ connection.connect((err) => {
 ////////////////////////////////////////////////////
 // Middleware 설정
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5002', //클라이언트 도메인
+    credentials: true,  //세션 쿠키를 포함한 요청 허용
+    methods: ["GET", "POST"]
+}));
 app.use(express.static('public'));
 
 // 포장 주문 로그인 페이지 라우팅
@@ -75,6 +79,59 @@ app.post('/login', async (req, res) => {
         res.json({ success: true, username: user.username});
     });
 });
+
+// 회원가입 엔드포인트 추가
+app.post('/register', async (req, res) => {
+    const { username, user_id, password } = req.body;
+
+    if (!username || !user_id || !password) {
+        return res.status(400).json({ success: false, message: "모든 필드를 입력해주세요." });
+    }
+
+    try {
+        // 비밀번호 암호화
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        const sql = "INSERT INTO users (username, user_id, password) VALUES (?, ?, ?)";
+
+        connection.query(sql, [username, user_id, hashedPassword], (err, results) => {
+            if (err) {
+                console.error("회원가입 실패:", err);
+                return res.status(500).json({ success: false, message: "서버 오류가 발생했습니다." });
+            }
+            res.status(200).json({ success: true, message: "회원가입 성공!" });
+        });
+    } catch (error) {
+        console.error("회원가입 처리 중 오류:", error);
+        res.status(500).json({ success: false, message: "서버 오류가 발생했습니다." });
+    }
+});
+
+// 로그인 상태 확인 API
+app.get('/check-login', (req, res) => {
+    if (req.session.user) {
+        res.json({ success: true, user: req.session.user });
+    } else {
+        res.json({ success: false, message: "로그인되지 않았습니다." });
+    }
+});
+
+// 로그인 페이지 라우팅 추가
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'takeout_order.html'));
+});
+
+
+// 로그아웃 엔드포인트 추가
+app.post('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).json({ success: false, message: "로그아웃 중 오류가 발생했습니다." });
+        }
+        res.json({ success: true, message: "로그아웃 성공!" });
+    });
+});
+
+
 
 
     
