@@ -4,29 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>회원가입 | Ice Cream Robot</title>
-    <link rel="stylesheet" href="/css/takeout_order.css">
+    <link rel="stylesheet" href="/css/client_registration.css">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <h1>회원가입</h1>
-        <form id="registerForm">
-            <label for="username">이름:</label>
-            <input type="text" id="username" name="username" required placeholder="이름을 입력하세요">
+        <h1>🍦 회원가입 🤖</h1>
+        <p class="subtitle">Aris 아이스크림 로봇에 오신 것을 환영합니다!</p>
 
-            <label for="user_id">아이디:</label>
-            <input type="text" id="user_id" name="user_id" required placeholder="아이디를 입력하세요">
+        <div class="registration_box">
+            <h2>회원가입</h2>
+            <form id="registerForm">
+                <label for="username">이름:</label>
+                <input type="text" id="username" name="username" required placeholder="이름을 입력하세요">
+                
+                <br>
 
-            <label for="password">비밀번호:</label>
-            <input type="password" id="password" name="password" required placeholder="비밀번호를 입력하세요">
+                <label for="user_id">아이디:</label>
+                <input type="text" id="user_id" name="user_id" required placeholder="아이디를 입력하세요">
+                
+                <br>
 
-            <label for="confirm_password">비밀번호 확인:</label>
-            <input type="password" id="confirm_password" name="confirm_password" required placeholder="비밀번호를 다시 입력하세요">
+                <label for="password">비밀번호:</label>
+                <input type="password" id="password" name="password" required placeholder="비밀번호를 입력하세요">
+                
+                <br>
 
-            <button type="submit">회원가입</button>
-        </form>
-        <p id="registerMessage"></p>
-        <button onclick="location.href='/login'">로그인 페이지로 이동</button>
+                <label for="confirm_password">비밀번호 확인:</label>
+                <input type="password" id="confirm_password" name="confirm_password" required placeholder="비밀번호를 다시 입력하세요">
+                
+                <br>
+                
+                <button type="submit">회원가입</button>
+                <button onclick="location.href='/login'">로그인 페이지로 이동</button>
+            </form>
+
+            <p id="registerMessage" class="register-message"></p>
+            
+        </div>
+
+
     </div>
+        
 
     <script src="/js/client_registration.js" defer></script>
 </body>

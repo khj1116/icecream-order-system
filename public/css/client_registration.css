@@ -1,0 +1,119 @@
+/* 전체 페이지 스타일 */
+body {
+    font-family: 'Baloo 2', cursive;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(120deg, #FFD700, #FF69B4);
+    overflow: hidden;
+}
+
+/* 회원가입 컨테이너 */
+.container {
+    text-align: center;
+    color: #fff;
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* 제목 스타일 */
+h1 {
+    font-size: 28px;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* 부제목 스타일 */
+.subtitle {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+/* 회원가입 박스 */
+.registration_box {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    width: 350px;
+    margin: 0 auto;
+}
+
+/* 회원가입 박스 내부 글씨 색상 조정 */
+.registration_box h2 {
+    color: #333;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* 회원가입 폼 정렬 */
+.registration_box form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* 입력 필드 및 라벨 스타일 */
+.registration_box label {
+    width: 100%;
+    text-align: left;
+    font-size: 16px;
+    font-weight: bold;
+    color: #444;
+    margin-bottom: 5px;
+}
+
+/* 입력 필드 스타일 */
+.registration_box input {
+    width: 95%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 2px solid #ff69b4;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #333;
+    background-color: #fff;
+    outline: none;
+}
+
+/* 플레이스홀더 색상 */
+input::placeholder {
+    color: #aaa;
+}
+
+/* 버튼 스타일 */
+.registration_box button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background: #ff4081;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+button:hover {
+    background: #e91e63;
+}
+
+/* 에러 메시지 */
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* 애니메이션 효과 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
