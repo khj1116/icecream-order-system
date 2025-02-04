@@ -1,0 +1,136 @@
+/* 전체 페이지 스타일 */
+body {
+    font-family: 'Baloo 2', cursive;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(120deg, #FFD700, #FF69B4);
+    overflow: hidden;
+}
+
+/* 로그인 컨테이너 */
+.container {
+    text-align: center;
+    color: #fff;
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* 제목 스타일 */
+h1 {
+    font-size: 28px;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* 부제목 스타일 */
+.subtitle {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+/* 로그인 박스 */
+.login-box {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    width: 300px;
+    margin: 0 auto;
+}
+
+/* 로그인 박스 내부 글씨 색상 조정 */
+.login-box h2 {
+    color: #333; /* 어두운 색상으로 변경 */
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* 로그인 박스 내부 폼 정렬 */
+.login-box form {
+    display: flex;
+    flex-direction: column; /* 입력 필드와 라벨을 수직 정렬 */
+    align-items: center; /* 가운데 정렬 */
+    width: 100%;
+}
+
+/* 입력 필드와 라벨 스타일 조정 */
+.login-box label {
+    width: 100%;
+    text-align: left; /* 왼쪽 정렬 */
+    font-size: 16px;
+    font-weight: bold;
+    color: #444; /* 더 어두운 색으로 변경하여 가독성 향상 */
+    margin-bottom: 5px;
+}
+
+/* 입력 필드 스타일 */
+.login-box input {
+    width: 95%; /* 입력 필드를 부모 크기에 맞게 조정 */
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 2px solid #ff69b4; /* 분홍색 테두리 */
+    border-radius: 8px;
+    font-size: 16px;
+    color: #333; /* 입력한 글씨도 잘 보이도록 설정 */
+    background-color: #fff;
+    outline: none;
+}
+
+
+/* 버튼 정렬 */
+.login-box button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background: #ff4081;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+
+
+
+input::placeholder {
+    color: #aaa; /* 플레이스홀더 색상 */
+}
+
+/* 버튼 스타일 */
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background: #ff4081;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #e91e63;
+}
+
+/* 에러 메시지 */
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* Fade-in 애니메이션 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}

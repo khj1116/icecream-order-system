@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 등록</title>
+
+    <!-- Google Fonts 링크 -->
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/customer_registration.css">
+
+  
+</head>
+<body>
+    <canvas id="background"></canvas>
+    <div class="content">
+        <h1>회원 등록</h1>
+        <video id="video" width="413" height="531" autoplay></video>
+        <canvas id="canvas" width="413" height="531" style="display: none;"></canvas>
+        <br>
+        <div id="input-fields">
+            <input type="text" id="name" placeholder="회원 이름" required>
+            <input type="text" id="user_id" placeholder="회원 ID" required>
+            <input type="password" id="password" placeholder="비밀번호" required> 
+            <br>
+            <button id="submit">등록</button>
+        </div>
+        <button id="capture" style="display: none;">사진 찍기</button>
+       
+        <button id="member-register">회원 등록</button>
+        <button id="back" class="back-button">뒤로가기</button>
+    </div>
+
+    <script src="/js/customer_registration.js" defer></script>
+</body>
+</html>

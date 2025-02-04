@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 전용 포장 주문</title>
+    <link rel="stylesheet" href="/css/member_order.css">
+</head>
+<body>
+    <div class="container">
+        <h1 id="welcome-text">회원님! 안녕하세요.</h1> <!-- 로그인한 회원 이름 표시 -->
+        <form id="orderForm">
+            <label for="flavor">맛 선택:</label>
+            <select id="flavor" required>
+                <option value="blueberry">블루베리</option>
+                <option value="vanilla">바닐라</option>
+                <option value="strawberry">딸기</option>
+            </select>
+
+            <label for="perform">퍼포먼스 선택:</label>
+            <select id="perform" required>
+                <option value="A Shape">환영 인사</option>
+                <option value="B Shape">묘기</option>
+                <option value="C Shape">댄스</option>
+            </select>
+
+            <label for="topping">토핑 선택:</label>
+            <select id="topping" required>
+                <option value="joripong">조리퐁</option>
+                <option value="cocoball">코코볼</option>
+                <option value="sunflower_seed">해바라기씨</option>
+            </select>
+
+            <button type="submit">주문하기</button>
+            <button type="reset">취소</button>
+        </form>
+        <div id="message"></div>
+    </div>
+
+    <script src="/js/member_order.js" defer></script>
+</body>
+</html>

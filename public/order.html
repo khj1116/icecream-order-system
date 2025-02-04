@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아이스크림 주문</title>
+
+    <!-- Google Fonts 링크 -->
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600&display=swap" rel="stylesheet">
+
+    
+    <link rel="stylesheet" href="/css/order.css">
+
+</head>
+<body>
+    <!-- 캔버스 추가-->
+    <canvas id="backgroundCanvas"></canvas>
+    <div class="moving-background"></div>
+    <div class="container">
+        <h1 id="welcome-text">어서오세요! 아이스크림 로봇 Aris입니다!</h1>
+        <form id="orderForm">
+            <label id="flavor-label" for="flavor">맛 선택:</label>
+            <select id="flavor" required>
+                <option value="blueberry" data-en="Blueberry" data-ko="블루베리">블루베리</option>
+                <option value="vanilla" data-en="Vanilla" data-ko="바닐라">바닐라</option>
+                <option value="strawberry" data-en="Strawberry" data-ko="딸기">딸기</option>
+            </select>
+
+            <label id="perform-label" for="perform">퍼포먼스 선택:</label>
+            <select id="perform" required>
+                <option value="A Shape" data-en="Greeting" data-ko="환영 인사">환영 인사</option>
+                <option value="B Shape" data-en="Trick" data-ko="묘기">묘기</option>
+                <option value="C Shape" data-en="Dance" data-ko="댄스">댄스</option>
+            </select>
+
+            <label id="topping-label" for="topping">토핑 선택:</label>
+            <select id="topping" required>
+                <option value="joripong" data-en="Joripong" data-ko="조리퐁">조리퐁</option>
+                <option value="cocoball" data-en="Coco Ball" data-ko="코코볼">코코볼</option>
+                <option value="sunflower_seed" data-en="Sunflower Seed" data-ko="해바라기씨">해바라기씨</option>
+            </select>
+
+            <!-- <label id="order-selection-label" for="order_selection">매장 주문:</label>
+            <input type="radio" id="option1" name="order_type" value="hall" style="width:30px;height:30px;border:2px;" checked>
+
+
+            <label id="takeout-selection-label" for="order_selection">포장 주문:</label>
+            <input type="radio" id="option2" name="order_type" value="packed" style="width:30px;height:30px;border:2px;"> -->
+
+
+            <button id="submit-button" type="submit">주문하기</button>
+            <button id="reset-button" type="reset">취소</button>
+        </form>
+
+        <div id="message" class="success-message"></div>
+        <div id="welcome-message"></div>
+
+
+        <!-- 회원 등록 버튼 -->
+        <button class="register-button" id="registerButton">단골 손님 등록</button>
+
+        <!--언어 변경 버튼-->
+        <button class="language-button" id="languageButton">English</button>
+    </div>
+
+    <script src="/js/order.js" defer></script>
+</body>
+</html>
