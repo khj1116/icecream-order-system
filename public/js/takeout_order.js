@@ -58,18 +58,7 @@ loginForm.addEventListener('submit', async (event) => {
             });
         }
     });
-    //로그인 유지 기능을 프론트 엔드에 추가
-    document.addEventListener("DOMContentLoaded", async () => {
-        try {
-            const response = await fetch('/check-login', { credentials: 'include' });
-            const data = await response.json();
-            if (data.success) {
-                document.querySelector(".login-box h2").textContent = `👋 안녕하세요, ${data.user.username}님!`;
-            }
-        } catch (error) {
-            console.error("로그인 상태 확인 오류:", error);
-        }
-    });
+
     
     
         
