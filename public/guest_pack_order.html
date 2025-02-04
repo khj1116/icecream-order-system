@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>비회원 포장 주문</title>
+    <link rel="stylesheet" href="/css/guest_pack_order.css">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>포장 주문 페이지</h1> <!-- 회원 이름 표시 없음 -->
+        <form id="orderForm">
+            <label for="flavor">맛 선택:</label>
+            <select id="flavor" required>
+                <option value="blueberry">블루베리</option>
+                <option value="vanilla">바닐라</option>
+                <option value="strawberry">딸기</option>
+            </select>
+
+            <label for="perform">퍼포먼스 선택:</label>
+            <select id="perform" required>
+                <option value="A Shape">환영 인사</option>
+                <option value="B Shape">묘기</option>
+                <option value="C Shape">댄스</option>
+            </select>
+
+            <label for="topping">토핑 선택:</label>
+            <select id="topping" required>
+                <option value="joripong">조리퐁</option>
+                <option value="cocoball">코코볼</option>
+                <option value="sunflower_seed">해바라기씨</option>
+            </select>
+
+            <button type="submit">주문하기</button>
+            <button type="reset">취소</button>
+            <button onclick="location.href='/login'">뒤로</button>
+        </form>
+        <div id="message"></div>
+    </div>
+
+    <script src="/js/guest_pack_order.js" defer></script>
+</body>
+</html>

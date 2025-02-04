@@ -21,16 +21,8 @@ window.onload = function() {
    
 
 
-
-
 //기존 주문 아이디를 추적하여 중복 추가 방지
 const existingOrderIds = new Set(JSON.parse(sessionStorage.getItem("existingOrderIds")) || []);
-
-// // 페이지 로드 시 실시간 주문 내역 초기화
-// window.addEventListener("load", () => {
-//     liveTableBody.innerHTML = '';  
-// });
-
 
 
 // ✅ 페이지가 처음 로드될 때, 기존 데이터 불러오기
