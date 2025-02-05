@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     sessionStorage.setItem("user_id", user_id);
                     sessionStorage.setItem("username", parsedData.username);
                     alert(`${parsedData.username}님, 환영합니다!`);  //회원 이름 알림창
-                    window.location.href = "/member_order.html"; // 회원주문 페이지 이동
+                    window.location.href = "/member_hall_order.html"; // 매장회원주문 페이지 이동
                 } else {
                     messageBox.textContent = '아이디 또는 비밀번호가 올바르지 않습니다.';
                 }

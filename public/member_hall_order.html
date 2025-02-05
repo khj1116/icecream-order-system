@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아이스크림 주문</title>
+
+    <!-- Google Fonts 링크 -->
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+    <link rel="stylesheet" href="/css/member_hall_order.css">
+
+</head>
+<body>
+    <!-- 캔버스 추가-->
+    <canvas id="backgroundCanvas"></canvas>
+    <div class="moving-background"></div>
+    <div class="container">
+        <h1 id="welcome-text">회원님! 안녕하세요.</h1><!--로그인한 회원 이름 표시-->
+        <form id="orderForm">
+            <label id="flavor-label" for="flavor">맛 선택:</label>
+            <select id="flavor" required>
+                <option value="blueberry" data-en="Blueberry" data-ko="블루베리">블루베리</option>
+                <option value="vanilla" data-en="Vanilla" data-ko="바닐라">바닐라</option>
+                <option value="strawberry" data-en="Strawberry" data-ko="딸기">딸기</option>
+            </select>
+
+            <label id="perform-label" for="perform">퍼포먼스 선택:</label>
+            <select id="perform" required>
+                <option value="A Shape" data-en="Greeting" data-ko="환영 인사">환영 인사</option>
+                <option value="B Shape" data-en="Trick" data-ko="묘기">묘기</option>
+                <option value="C Shape" data-en="Dance" data-ko="댄스">댄스</option>
+            </select>
+
+            <label id="topping-label" for="topping">토핑 선택:</label>
+            <select id="topping" required>
+                <option value="joripong" data-en="Joripong" data-ko="조리퐁">조리퐁</option>
+                <option value="cocoball" data-en="Coco Ball" data-ko="코코볼">코코볼</option>
+                <option value="sunflower_seed" data-en="Sunflower Seed" data-ko="해바라기씨">해바라기씨</option>
+            </select>
+
+
+
+            <button id="submit-button" type="submit">주문하기</button>
+            <button id="reset-button" type="reset">취소</button>
+        </form>
+
+        <div id="message" class="success-message"></div>
+        <div id="welcome-message"></div>
+
+
+       
+        <!--언어 변경 버튼-->
+        <button class="language-button" id="languageButton">English</button>
+    </div>
+
+    <script src="/js/member_hall_order.js" defer></script>
+</body>
+</html>
