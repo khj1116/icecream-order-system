@@ -361,7 +361,7 @@ app.get('/orders', (req, res) => {
 });
 
 app.get('/order', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'order.html'));
+    res.sendFile(path.join(__dirname, 'public', 'hall_order.html'));
 });
 
 
