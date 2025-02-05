@@ -6,6 +6,9 @@
     <title>비회원 포장 주문</title>
     <link rel="stylesheet" href="/css/guest_pack_order.css">
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="/js/guest_pack_order.js" defer></script>
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+
 </head>
 <body>
     <div class="container">
@@ -34,11 +37,11 @@
 
             <button type="submit">주문하기</button>
             <button type="reset">취소</button>
-            <button onclick="location.href='/login'">뒤로</button>
+           
         </form>
         <div id="message"></div>
     </div>
 
-    <script src="/js/guest_pack_order.js" defer></script>
+    
 </body>
 </html>
