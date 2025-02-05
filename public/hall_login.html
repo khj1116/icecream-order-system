@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hall Order Login | Ice Cream Robot</title>
+    <link rel="stylesheet" href="/css/hall_login.css">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>🍦 Welcome to Ice Cream Robot 🤖</h1>
+        <p class="subtitle">Enjoy delicious soft ice cream flavors!</p>
+
+        <div class="login-box">
+            <h2>로그인</h2>
+            <form id="loginForm">
+                
+                <label for="user_id">아이디:</label>
+                <input type="text" id="userid" name="user_id" placeholder="Enter your ID">
+
+                <br>
+    
+                <label for="password">비밀번호:</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password">
+
+                <br>
+    
+                <button type="submit">Login</button>
+                
+            </form>
+            <button type="button" id="client_registration">회원가입</button>
+            <button id="guestOrderButton" type="button">비회원 주문</button>
+    
+            <p id="message" class="error-message"></p>
+
+        </div>
+    </div>
+        
+
+    <script src="/js/hall_login.js" defer></script>
+</body>
+</html>
