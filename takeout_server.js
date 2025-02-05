@@ -39,7 +39,7 @@ connection.connect((err) => {
 // Middleware 설정
 app.use(bodyParser.json());
 app.use(cors({
-    origin: 'http://localhost:5002', //클라이언트 도메인
+    origin: ['http://localhost:5000','http://localhost:5002'], //클라이언트 도메인
     credentials: true,  //세션 쿠키를 포함한 요청 허용
     methods: ["GET", "POST"]
 }));
@@ -137,6 +137,46 @@ app.post('/logout', (req, res) => {
         res.json({ success: true, message: "로그아웃 성공!" });
     });
 });
+
+
+app.post('/order', async(req, res) => {
+    console.log('포장 주문 요청 수신:', req.body);
+
+    const { flavor, perform, topping, orderType, username } = req.body;
+    const finalOrderType = orderType ? orderType : 'packed';
+
+    if (!flavor || !perform || !topping) {
+        return res.status(400).json({ error: '주문 정보가 불완전합니다.' });
+    }
+
+    try {
+        // 1️⃣ 포장 주문을 `5002`의 DB에 저장
+        const sql = 'INSERT INTO takeout_orders (flavor, perform, topping, orderType, customer_name) VALUES (?, ?, ?, ?, ?)';
+        await connection.promise().query(sql, [flavor, perform, topping, finalOrderType, username || "비회원"]);
+
+        console.log("✅ 포장 주문이 성공적으로 저장되었습니다!");
+
+        // 2️⃣ `5000` 서버로 주문 데이터 전송
+        const forwardResponse = await fetch('http://localhost:5000/order', {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(req.body),
+        });
+
+        if (!forwardResponse.ok) {
+            throw new Error("🚨 5000 서버로 주문 데이터 전달 실패");
+        }
+
+        console.log("✅ 실시간 주문 내역 서버(5000)로 주문이 전송되었습니다!");
+        res.status(200).json({ message: "포장 주문 성공 및 실시간 주문 내역 반영 완료!" });
+
+    } catch (error) {
+        console.error('❌ 포장 주문 처리 중 오류 발생:', error);
+        res.status(500).json({ error: '포장 주문 처리 중 오류가 발생했습니다.' });
+    }
+});
+
+
 
 
 

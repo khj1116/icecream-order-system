@@ -16,63 +16,163 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const orderForm = document.getElementById("orderForm");
+    
+
+    if (!orderForm) {
+        console.error("❌ 'orderForm' 요소를 찾을 수 없습니다.");
+        return;
+    }
+
     const message = document.getElementById("message");
 
-    if (orderForm) {
-        orderForm.addEventListener("submit", async (event) => {
-            event.preventDefault();
 
-            const user_id = sessionStorage.getItem("user_id");
-            const username = sessionStorage.getItem("username");
-
-            const order = {
-                flavor: document.getElementById("flavor").value,
-                perform: document.getElementById("perform").value,
-                topping: document.getElementById("topping").value,
-                orderType: "packed",
-                username: username,
-                user_id: user_id
-            };
-
-            try {
-                const response = await fetch("http://localhost:5000/order", {  //서버 주소 수정
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(order)
-                });
     
-                const result = await response.json();
-    
-                if (response.ok) {
-                    message.textContent = "주문이 성공적으로 접수되었습니다!";
-                    orderForm.reset();
-                } else {
-                    message.textContent = "주문 접수에 실패했습니다.";
-                }
-            } catch (error) {
-                message.textContent = "서버와 연결할 수 없습니다.";
-            }
+    // Socket.IO 연결
+    let socket;
+    if (typeof io !== "undefined") {
+        socket = io('http://localhost:5000/');
+        console.log(" Socket.IO 연결 성공");
+
+        // 🔴 기존에 등록된 이벤트가 있다면 제거 (이중 등록 방지)
+        socket.off("update_orders");
+
+        // ✅ 주문 내역 실시간 업데이트 리스너 등록
+        socket.on("update_orders", (orders) => {
+            console.log("🔄 실시간 주문 내역 업데이트 수신:", orders);
+            updateOrderList(orders);
         });
+
+
     } else {
-        console.error("'orderForm' 요소를 찾을 수 없습니다.");
+        console.error("❌ Socket.IO가 로드되지 않았습니다. HTML에 `<script src='https://cdn.socket.io/4.0.1/socket.io.min.js'></script>` 추가하세요.");
+        return; // ⚠️ Socket.IO가 없으면 실행 중단
     }
+
+    // 주문 제출 이벤트 리스너 추가
+    orderForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const flavor = document.getElementById('flavor');
+        const perform = document.getElementById('perform');
+        const topping = document.getElementById('topping');
+        const user_id = sessionStorage.getItem("user_id");
+        const username = sessionStorage.getItem("username");
+
+        if (!flavor || !perform || !topping) {
+            console.error('필수 요소가 누락되었습니다. HTML 구조를 확인하세요.');
+            console.log('flavor:', flavor);
+            console.log('perform:', perform);
+            console.log('topping:', topping);
+           
+            return;
+        }
+
+        //요소가 존재하는지 확인
+
+        const order = {
+            flavor: flavor.value,
+            perform: perform.value, 
+            topping: topping.value,
+            orderType: "packed",
+            username: sessionStorage.getItem("username"),
+            user_id: sessionStorage.getItem("user_id")
+        };
+
+        console.log("서버로 전송할 주문 데이터:", order);
+
+        //서버로 데이터 전송
+        
+        try {
+            const response = await fetch("http://localhost:5000/order", {  //서버 주소 수정
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(order),
+                credentials: "include"  //CORS 문제 방지
+            });
+            console.log("서버 응답 상태:", response.status);
+           
+            
+    
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("❌ 서버 응답 오류:", errorText);
+                message.textContent = `❌ 주문 접수 실패: ${errorText}`;
+                return;
+            }
+
+            const result = await response.json();
+            console.log("✅ 주문 성공:", result);
+            message.textContent = "✅ 주문이 성공적으로 접수되었습니다!";
+
+            // ✅ 주문이 성공한 후에만 `orderSubmitted` 설정
+            sessionStorage.setItem("orderSubmitted", "true");
+
+            orderForm.reset();
+
+            
+        } catch (error) {
+            console.error("🚨 주문 요청 중 오류 발생:", error);
+            message.textContent = "❌ 서버와 연결할 수 없습니다.";
+        }
+    });
+
+    // 뒤로 가기 시 sessionStorage 초기화
+    window.addEventListener("pageshow", function (event) {
+        if (event.persisted) {
+            console.log("페이지 복원 감지됨 - sessionStorage 초기화");
+            sessionStorage.removeItem("orderSubmitted");
+        }
+    });
+
+    // 페이지 떠날 때 sessionStorage 초기화
+    window.addEventListener("beforeunload", function () {
+        sessionStorage.removeItem("orderSubmitted");
+    });
+
+    // 주문 목록 업데이트 함수
+    function updateOrderList(orders) {
+        const orderTable = document.getElementById("order-list");
+        if (!orderTable) {
+            console.error("❌ 'order-list' 요소를 찾을 수 없습니다.");
+            return;
+        }
+
+        orderTable.innerHTML = ""; // 기존 내용 초기화
+        orders.forEach((order) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${order.id}</td>
+                <td>${order.flavor}</td>
+                <td>${order.perform}</td>
+                <td>${order.topping}</td>
+                <td>${order.orderType}</td>
+                <td>${order.customer_name}</td>
+            `;
+            orderTable.appendChild(row);
+        });
+    }
+
+
 });
 
 
 
 
 
-
-
-        
-
 //로그인 유지 기능을 프론트 엔드에 추가
     document.addEventListener("DOMContentLoaded", async () => {
         try {
             const response = await fetch('/check-login', { credentials: 'include' });
             const data = await response.json();
+
             if (data.success) {
-                document.querySelector(".login-box h2").textContent = `👋 안녕하세요, ${data.user.username}님!`;
+                const loginBoxHeader = document.querySelector(".login-box h2");
+                if (loginBoxHeader) { // 요소가 존재하는지 확인 후 설정
+                    loginBoxHeader.textContent = `👋 안녕하세요, ${data.user.username}님!`;
+                   
+                } else {
+                    console.warn("⚠️ '.login-box h2' 요소를 찾을 수 없습니다. HTML 구조를 확인하세요.");
+                }
             }
         } catch (error) {
             console.error("로그인 상태 확인 오류:", error);

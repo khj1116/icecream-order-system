@@ -13,16 +13,35 @@ const path = require('path');
 const app = express();
 const PORT = 5000;
 const server = http.createServer(app); //기존 express 앱을 http 서버로 래핑
-const io = new Server(server);
+
+//cors 설정 추가
+const corsOptions = {
+    origin: ['http://localhost:5002', 'http://localhost:5000'], // 5002, 5000 모두 허용
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'],
+    credentials: true
+};
+
+
+app.use(cors(corsOptions));
 
 // Middleware 설정
 app.use(bodyParser.json({ limit: '50mb'})); //json 요청 본문 크기 제한 설정
 app.use(bodyParser.urlencoded( {limit: '50mb',extended: true })); // URL-encoded 데이터 크기 제한 설정
-app.use(cors());
 app.use(express.static('public')); // Static 파일 제공
 
-
 /////////////////////////////////////////////////////////////////////////////////
+
+// Socket.IO에 대한 CORS 설정 추가
+const io = new Server(server, {
+    cors: {
+        origin: ['http://localhost:5002', 'http://localhost:5000'],
+        methods: ['GET', 'POST'],
+        allowedHeaders: ['Content-Type'],
+        credentials: true
+    }
+});
+
 
 ///////////////////SQL/////////////////////////////////////////////
 // MySQL 연결 설정
@@ -40,13 +59,12 @@ connection.connect((err) => {
     } else {
         console.log('MySQL에 성공적으로 연결되었습니다.');
 
-        //서버 시작시 실시간 주문 내역 초기화
+        // 주문 내역 초기화 로직 수정
         connection.query('TRUNCATE TABLE live_orders', (err, result) => {
             if (err) {
                 console.error('실시간 주문 테이블 초기화 실패:', err);
             } else {
                 console.log('실시간 주문 테이블 초기화 완료.');
-                connection.query('ALTER TABLE live_orders AUTO_INCREMENT = 1');
             }
         });
     }
@@ -58,11 +76,11 @@ let liveOrders = [];  //실시간 주문 데이터를 저장할 배열
 app.post('/order', async(req, res) => {
     console.log('POST /order 요청 수신'); //요청 수신 확인 로그 추가
     //req.body 출력
-    console.log('req.body:', req.body);
+    // console.log('req.body:', req.body);
 
-        //클라이언트에서 받은 주문 데이터
+        // //클라이언트에서 받은 주문 데이터
         const { flavor, perform, topping, orderType, username } = req.body;
-        console.log('서버에서 받은 주문 데이터:' , req.body);
+        // console.log('서버에서 받은 주문 데이터:' , req.body);
 
         // orderType이 제공되지 않았을 경우 기본값 설정('hall')
         const finalOrderType = orderType ? orderType : 'hall';
@@ -84,68 +102,26 @@ app.post('/order', async(req, res) => {
     
             console.log(`주문 처리 완료: ${flavor}, ${perform}, ${topping}, ${finalOrderType}, ${username || "비회원"}`);
     
-            // 주문 내역 최신화
+            // 실시간 주문 내역 최신화
             const [liveResults] = await connection.promise().query('SELECT * FROM live_orders ORDER BY id DESC');
-            
-            
             io.emit('update_orders', liveResults); // 실시간 업데이트
 
          
-            console.error("주문 내역이 없습니다.");
             
             
-            res.status(200).json({ status: 'success', message: '주문이 성공적으로 처리되었습니다.' });
+            return res.status(200).json({ status: 'success', message: '주문이 성공적으로 처리되었습니다.' });
     
         } catch (error) {
             console.error('주문 처리 중 오류:', error);
-            res.status(500).json({ error: '서버 오류가 발생했습니다.' });
+            return res.status(500).json({ error: '서버 오류가 발생했습니다.' });
         }
     });
 
-
-
-     
-
-    //     // SQL에 데이터 삽입
-    //     const query = `INSERT INTO live_orders (flavor, perform, topping, orderType, customer_name, customer_id) VALUES (?, ?, ?, ?, ?, ?)`;
-    //     const values = [flavor, perform, topping, finalOrderType, username || null, user_id || null];
-
-    //     connection.execute(query, values, (err, results) => {
-    //         if (err) {
-    //             console.error('주문 데이터 저장 실패:', err);
-    //             return res.status(500).json({ error: '주문 데이터를 저장하는 중 오류가 발생했습니다.' });
-    //         }
-
-    //         //새 주문 데이터
-    //         const newOrder = {
-    //             id: results.insertId, //mysql에서 자동 생성된 ID 사용
-    //             flavor,
-    //             perform,
-    //             topping,
-    //             orderType: finalOrderType,
-    //             customer_name: username || null,
-    //             customer_id: user_id || null
-            
-    //         };
-    //         orders.unshift(newOrder); //주문 데이터를 배열에 추가
-    //         io.emit('update_orders' , orders); //실시간으로 클라이언트에 업데이트 전송
-
-    //         console.log(`Order received: ${JSON.stringify(newOrder)}`);
-    //         res.status(200).json({ status: 'success', message: '주문이 성공적으로 처리되었습니다.' });
-    //     });
-
-    // });
-
-
+// favicon.ico 요청 무시 (404 에러 방지)
+app.get('/favicon.ico', (req, res) => res.status(204).end());
 
 // 주문 내역 API
 app.get('/api/live_orders', (req, res) => {
-    // const query = `
-    //       SELECT id, flavor, perform, topping, orderType,
-    //              COALESCE(customer_name, '비회원') AS customer_name
-    //       FROM live_orders
-    //       ORDER BY id DESC;
-    // `;
 
     connection.query('SELECT * FROM live_orders ORDER BY id ASC', (err, results) => {
         if (err) {
@@ -168,22 +144,50 @@ app.get('/api/all_orders', (req, res) => {
     });
 });
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 
 
 // Socket.IO 연결 이벤트
 io.on('connection', (socket) => {
-    console.log('클라이언트가 연결되었습니다.', socket.id);
+    console.log(`클라이언트(${socket.id})가 연결되었습니다.`);
 
-    connection.query('SELECT * FROM live_orders ORDER BY id DESC', (err, results) => {
-        if (err) {
-            console.error('주문 데이터 로드 실패:', err);
-            return;
-        }
-    
+    //주문 내역을 항상 emit하지 않도록 조건 추가
+    socket.on('request_live_orders', () => {
+        connection.query('SELECT * FROM live_orders ORDER BY id DESC', (err, results) => {
+            if (err) {
+                console.error('주문 데이터 로드 실패:', err);
+                return;
+            }
+            socket.emit('update_orders', results); // 클라이언트에 초기 주문 데이터 전송
+        });
 
-        socket.emit('update_orders', results); // 클라이언트에 초기 주문 데이터 전송
     });
-   
+    // 클라이언트가 새로운 주문을 추가하면 실시간으로 업데이트
+    socket.on('new_order', async (orderData) => {
+        console.log("🛒 클라이언트에서 주문 발생:", orderData);
+
+        try {
+            const insertLiveOrder = `
+                INSERT INTO live_orders (flavor, perform, topping, orderType, customer_name) 
+                VALUES (?, ?, ?, ?, ?)
+            `;
+            await connection.promise().query(insertLiveOrder, [
+                orderData.flavor, orderData.perform, orderData.topping, orderData.orderType, orderData.username || "비회원"
+            ]);
+
+            // 최신 주문 목록을 클라이언트에 전송
+            const [liveResults] = await connection.promise().query('SELECT * FROM live_orders ORDER BY id DESC');
+            io.emit('update_orders', liveResults);
+            console.log("✅ 주문이 실시간으로 업데이트되었습니다!");
+
+        } catch (error) {
+            console.error('❌ 주문 데이터 삽입 중 오류 발생:', error);
+        }
+    });
+ 
 });
 
 //////////////////////////////////////////////////////////////////////
