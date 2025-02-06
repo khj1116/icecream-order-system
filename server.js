@@ -79,28 +79,28 @@ app.post('/order', async(req, res) => {
     // console.log('req.body:', req.body);
 
         // //클라이언트에서 받은 주문 데이터
-        const { flavor, perform, topping, orderType, username } = req.body;
+        const { flavor, perform, topping, orderType, username, user_id } = req.body;
         // console.log('서버에서 받은 주문 데이터:' , req.body);
 
         // orderType이 제공되지 않았을 경우 기본값 설정('hall')
         const finalOrderType = orderType ? orderType : 'hall';
     
         //필수 데이터 확인
-        if (!flavor || !perform || !topping || !finalOrderType) {
+        if (!flavor || !perform || !topping || !finalOrderType || !user_id) {
             console.error('필수 데이터가 누락되었습니다.', req.body);
             return res.status(400).json({ error: '주문 정보가 불완전합니다.' });
         }
 
         try {
             // 실시간 주문 저장 (초기화 대상)
-            const insertLiveOrder = 'INSERT INTO live_orders (flavor, perform, topping, orderType, customer_name) VALUES (?, ?, ?, ?, ?)';
-            await connection.promise().query(insertLiveOrder, [flavor, perform, topping, finalOrderType, username || null]);
+            const insertLiveOrder = 'INSERT INTO live_orders (flavor, perform, topping, orderType, customer_name, customer_id) VALUES (?, ?, ?, ?, ?, ?)';
+            await connection.promise().query(insertLiveOrder, [flavor, perform, topping, finalOrderType, username || null, user_id]);
             
             // 영구 주문 저장(all_orders)
-            const insertAllOrder = 'INSERT INTO all_orders (flavor, perform, topping, orderType, customer_name) VALUES (?, ?, ?, ?, ?)';
-            await connection.promise().query(insertAllOrder, [flavor, perform, topping, finalOrderType, username || null]);
+            const insertAllOrder = 'INSERT INTO all_orders (flavor, perform, topping, orderType, customer_name, customer_id) VALUES (?, ?, ?, ?, ?, ?)';
+            await connection.promise().query(insertAllOrder, [flavor, perform, topping, finalOrderType, username || null, user_id]);
     
-            console.log(`주문 처리 완료: ${flavor}, ${perform}, ${topping}, ${finalOrderType}, ${username || "비회원"}`);
+            console.log(`주문 처리 완료: ${flavor}, ${perform}, ${topping}, ${finalOrderType}, ${username || "비회원"}, ID: ${user_id}`);
     
             // 실시간 주문 내역 최신화
             const [liveResults] = await connection.promise().query('SELECT * FROM live_orders ORDER BY id DESC');

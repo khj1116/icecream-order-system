@@ -58,11 +58,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const user_id = sessionStorage.getItem("user_id");
         const username = sessionStorage.getItem("username");
 
-        if (!flavor || !perform || !topping) {
+        if (!flavor || !perform || !topping || !user_id) {
             console.error('필수 요소가 누락되었습니다. HTML 구조를 확인하세요.');
             console.log('flavor:', flavor);
             console.log('perform:', perform);
             console.log('topping:', topping);
+            console.log('user_id:', user_id)
            
             return;
         }
