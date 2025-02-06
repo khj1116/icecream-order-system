@@ -228,14 +228,6 @@ io.on('connection', (socket) => {
 
 
 
-// 회원 이미지 저장용 임시 저장소 설정
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
-
-
-
-// 전역 변수
-let capturedImages = [];
 
 
 
@@ -244,22 +236,6 @@ let capturedImages = [];
 
 
 
-// 회원 이미지 캡처
-app.post('/capture', (req, res) => {
-    const { image } = req.body;
-
-    if (!image) {
-        return res.status(400).json({ error: '이미지가 전달되지 않았습니다.' });
-    }
-
-    if (capturedImages.length >= 100) {
-        return res.status(400).json({ error: '이미지 개수가 최대치에 도달했습니다.' });
-    }
-
-    capturedImages.push(image);
-    console.log(`Captured ${capturedImages.length} images.`);
-    res.status(200).json({ message: `사진 ${capturedImages.length}장이 캡처되었습니다.` });
-});
 
 
 // 데이터베이스 로드
@@ -308,76 +284,7 @@ app.post('/register-user', async (req, res) => {
 });
 
 
-// // 회원 등록 처리
-// app.post('/register', async (req, res) => {
 
-//     const { username, user_id, password, images, currentFace } = req.body;
-
-
-//     //데이터 유효성 검사
-//     if (!username || !user_id || !password) {
-//         console.error('요청 데이터가 누락되었습니다.');
-//         return res.status(400).json({ error: '등록에 필요한 정보가 부족합니다.' });
-//     }
-
-//     console.log(`회원 등록: ${username}, ID: ${user_id}`);
-
-//     //사용자 정보를 DB에 저장
-//     const query = 'INSERT INTO users (username, user_id, password) VALUES (?, ?, ?)';
-//     connection.execute(query, [username, user_id, password], async (err, results) => {
-//         if (err) {
-//             console.error('회원 정보 저장 실패:', err);
-//             return res.status(500).json({ error: '회원 정보 저장 중 오류가 발생했습니다.' });
-//         }
-//         console.log('회원 정보 저장 성공:' , results);
-
-//          // 얼굴 등록 서버로 이미지 데이터 전송
-//          try {
-//             const faceResponse = await axios.post('http://localhost:5003/register-face', {
-//                 user_id,
-//                 images,
-//             });
-
-//             if (faceResponse.status === 200) {
-//                 res.status(200).json({ message: '회원 등록 및 얼굴 등록 성공' });
-//             } else {
-//                 console.error('얼굴 등록 실패:', faceResponse.data);
-//                 res.status(500).json({ error: '얼굴 등록 실패' });
-//             }
-//         } catch (error) {
-//             console.error('얼굴 등록 서버 연결 실패:', error.message);
-//             res.status(500).json({ error: '얼굴 등록 서버와 연결할 수 없습니다.' });
-//         }
-//     });
-// });
-
-   
-
-    
-     
-    // // python api 호출하여 얼굴 학습 처리
-    // try {
-    //     const pythonResponse = await axios.post('http://localhost:5001/register', {
-    //         username,
-    //         user_id,
-    //         password,
-    //         images,  //base64 인코딩 된 이미지 배열
-    //         currentFace: currentFace, //현재 얼굴 이미지 추가
-    //     });
-        // //python api 호출 결과 학인
-        // if (pythonResponse.status === 200) {
-        //     console.log(`회원 등록 성공: ${name}, ID: ${user_id}`);
-        //     res.status(200).json({ message: `'${name}' 회원이 성공적으로 등록되었습니다.` });
-        // } else {
-        //     console.error('Python API에서 오류 발생:', pythonApiResponse.data.error);
-        //     res.status(500).json({ error: '회원 등록 중 오류가 발생했습니다.' });
-        // }
-//         res.status(200).json(pythonApiResponse.data);
-//     } catch (error) {
-//         console.error('Python API 호출 실패:', error.message);
-//         res.status(500).json({ error: '서버 내부 오류로 회원 등록에 실패했습니다.' });
-//     }
-// });
 
 
 
@@ -425,10 +332,10 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/order.html');
 });
 
-// 회원 등록 페이지 라우팅
-app.get('/customer_registration', (req, res) => {
-    res.sendFile(__dirname + '/public/customer_registration.html');
-});
+// // 회원 등록 페이지 라우팅
+// app.get('/customer_registration', (req, res) => {
+//     res.sendFile(__dirname + '/public/customer_registration.html');
+// });
 
 // 영구 주문 내역 페이지 라우팅
 app.get('/all_orders', (req, res) => {

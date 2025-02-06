@@ -215,10 +215,7 @@ const languageButton = document.getElementById('languageButton');
         });
 
 
-        //단골 손님 등록 페이지로 이동
-        registerButton.addEventListener('click', () => {
-            window.location.href = '/customer_registration.html';  //단골 손님 등록 페이지로 이동
-        });
+        
 
    
 
