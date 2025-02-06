@@ -93,8 +93,8 @@ app.post('/order', async(req, res) => {
 
         try {
             // 실시간 주문 저장 (초기화 대상)
-            const insertLiveOrder = 'INSERT INTO live_orders (flavor, perform, topping, orderType, customer_name, customer_id) VALUES (?, ?, ?, ?, ?, ?)';
-            await connection.promise().query(insertLiveOrder, [flavor, perform, topping, finalOrderType, username || null, user_id]);
+            const insertLiveOrder = 'INSERT INTO live_orders (flavor, perform, topping, orderType, customer_name) VALUES (?, ?, ?, ?, ?)';
+            await connection.promise().query(insertLiveOrder, [flavor, perform, topping, finalOrderType, username || null]);
             
             // 영구 주문 저장(all_orders)
             const insertAllOrder = 'INSERT INTO all_orders (flavor, perform, topping, orderType, customer_name, customer_id) VALUES (?, ?, ?, ?, ?, ?)';
@@ -116,6 +116,37 @@ app.post('/order', async(req, res) => {
             return res.status(500).json({ error: '서버 오류가 발생했습니다.' });
         }
     });
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 특정 회원의 최근 3개 주문 조회 API
+app.get('/api/recommendations/:user_id', async (req, res) => {
+    const { user_id } = req.params;
+
+    if (!user_id) {
+        return res.status(400).json({ error: "회원 ID가 필요합니다." });
+    }
+
+    try {
+        const query = `
+            SELECT flavor, perform, topping, orderType
+            FROM all_orders
+            WHERE customer_id = ?
+            ORDER BY created_at DESC
+            LIMIT 3
+        `;
+        const [orders] = await connection.promise().query(query, [user_id]);
+
+        if (orders.length === 0) {
+            return res.json({ message: "최근 주문 내역이 없습니다." });
+        }
+
+        res.json(orders);
+    } catch (error) {
+        console.error("❌ 최근 주문 조회 오류:", error);
+        res.status(500).json({ error: "서버 오류가 발생했습니다." });
+    }
+});
+
+
 
 // favicon.ico 요청 무시 (404 에러 방지)
 app.get('/favicon.ico', (req, res) => res.status(204).end());

@@ -26,6 +26,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const message = document.getElementById("message");
 
 
+
+
+
+
+
     
     // Socket.IO 연결
     let socket;
@@ -155,7 +160,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 });
+//최근 주문 내역을 토대로 주문 페이지에서 추천 메뉴로 표시
+document.addEventListener("DOMContentLoaded", async () => {
+    const user_id = sessionStorage.getItem("user_id"); // 현재 로그인한 회원 ID 가져오기
 
+    if (user_id) {
+        try {
+            const response = await fetch(`http://localhost:5000/api/recommendations/${user_id}`, { credentials: 'include' });
+            const data = await response.json();
+
+            if (data.error) {
+                console.error("🚨 추천 메뉴 불러오기 실패:", data.error);
+                return;
+            }
+
+            if (data.message) {
+                console.log(data.message);
+                return; // 추천 메뉴가 없으면 표시하지 않음
+            }
+
+            // 📢 추천 메뉴를 주문 페이지에 표시
+            const recommendationContainer = document.getElementById("recommendations");
+            if (!recommendationContainer) {
+                console.warn("⚠️ 'recommendations' 요소를 찾을 수 없습니다.");
+                return;
+            }
+
+            let recommendationHTML = `<h3>추천 메뉴 (최근 주문)</h3><ul>`;
+            data.forEach((order) => {
+                recommendationHTML += `<li>🍦 ${order.flavor} -  ${order.topping} (${order.orderType})</li>`;
+            });
+            recommendationHTML += `</ul>`;
+
+            recommendationContainer.innerHTML = recommendationHTML;
+
+        } catch (error) {
+            console.error("추천 메뉴 데이터 가져오기 오류:", error);
+        }
+    }
+});
 
 
 
