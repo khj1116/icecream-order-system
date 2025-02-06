@@ -156,11 +156,20 @@ app.post('/order', async(req, res) => {
 
         console.log("✅ 포장 주문이 성공적으로 저장되었습니다!");
 
+        const forwardOrder = {
+            flavor: req.body.flavor,
+            perform: req.body.perform,
+            topping: req.body.topping,
+            orderType: req.body.orderType || "packed",
+            username: req.body.username || "비회원",
+            user_id: req.body.user_id || null  // 비회원의 경우 user_id를 null로 설정
+        };
+
         // 2️⃣ `5000` 서버로 주문 데이터 전송
         const forwardResponse = await fetch('http://localhost:5000/order', {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(req.body),
+            body: JSON.stringify(forwardOrder),
         });
 
         if (!forwardResponse.ok) {

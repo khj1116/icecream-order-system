@@ -84,23 +84,24 @@ app.post('/order', async(req, res) => {
 
         // orderType이 제공되지 않았을 경우 기본값 설정('hall')
         const finalOrderType = orderType ? orderType : 'hall';
+        const userIdValue = user_id ? user_id : null; //비회원이면 user_id를 null 처리
     
         //필수 데이터 확인
-        if (!flavor || !perform || !topping || !finalOrderType || !user_id) {
+        if (!flavor || !perform || !topping || !finalOrderType) {
             console.error('필수 데이터가 누락되었습니다.', req.body);
             return res.status(400).json({ error: '주문 정보가 불완전합니다.' });
         }
 
         try {
-            // 실시간 주문 저장 (초기화 대상)
-            const insertLiveOrder = 'INSERT INTO live_orders (flavor, perform, topping, orderType, customer_name) VALUES (?, ?, ?, ?, ?)';
-            await connection.promise().query(insertLiveOrder, [flavor, perform, topping, finalOrderType, username || null]);
+            // 실시간 주문 저장 (초기화 대상)(비회원도 가능하게 수정)
+            const insertLiveOrder = 'INSERT INTO live_orders (flavor, perform, topping, orderType, customer_name, customer_id) VALUES (?, ?, ?, ?, ?, ?)';
+            await connection.promise().query(insertLiveOrder, [flavor, perform, topping, finalOrderType, username || "비회원", userIdValue]);
             
             // 영구 주문 저장(all_orders)
             const insertAllOrder = 'INSERT INTO all_orders (flavor, perform, topping, orderType, customer_name, customer_id) VALUES (?, ?, ?, ?, ?, ?)';
-            await connection.promise().query(insertAllOrder, [flavor, perform, topping, finalOrderType, username || null, user_id]);
+            await connection.promise().query(insertAllOrder, [flavor, perform, topping, finalOrderType, username || "비회원", userIdValue]);
     
-            console.log(`주문 처리 완료: ${flavor}, ${perform}, ${topping}, ${finalOrderType}, ${username || "비회원"}, ID: ${user_id}`);
+            console.log(`주문 처리 완료: ${flavor}, ${perform}, ${topping}, ${finalOrderType}, ${username || "비회원"}, ID: ${userIdValue}`);
     
             // 실시간 주문 내역 최신화
             const [liveResults] = await connection.promise().query('SELECT * FROM live_orders ORDER BY id DESC');
@@ -202,11 +203,11 @@ io.on('connection', (socket) => {
 
         try {
             const insertLiveOrder = `
-                INSERT INTO live_orders (flavor, perform, topping, orderType, customer_name) 
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO live_orders (flavor, perform, topping, orderType, customer_name, customer_id) 
+                VALUES (?, ?, ?, ?, ?, ?)
             `;
             await connection.promise().query(insertLiveOrder, [
-                orderData.flavor, orderData.perform, orderData.topping, orderData.orderType, orderData.username || "비회원"
+                orderData.flavor, orderData.perform, orderData.topping, orderData.orderType, orderData.username || "비회원", orderData.user_id || null
             ]);
 
             // 최신 주문 목록을 클라이언트에 전송
