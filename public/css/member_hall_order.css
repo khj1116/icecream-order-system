@@ -78,3 +78,29 @@ button:hover {
 .language-button:hover {
     background-color: #cc6600;
 }
+
+
+.recommendation-box {
+    background-color: #f58e07;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 5px;
+    text-align: center;
+}
+.recommendation-box h3 {
+    color: #333;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+.recommendation-box ul {
+    list-style-type: none;
+    padding: 0;
+}
+.recommendation-box li {
+    color: #222;
+    font-size: 16px;
+    padding: 8px;
+}
+.recommendation-box li:last-child {
+    border-bottom: none;
+}
