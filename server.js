@@ -7,6 +7,7 @@ const mysql = require('mysql2');
 const axios = require('axios'); //python api 호출을 위한 라이브러리
 const { Server } = require('socket.io');
 const path = require('path');
+const fs = require('fs');
 
 
 
@@ -224,42 +225,47 @@ io.on('connection', (socket) => {
 
 //////////////////////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// 데이터베이스 로드
-function loadDatabase() {
-    if (fs.existsSync(DATABASE_PATH)) {
-        const data = fs.readFileSync(DATABASE_PATH);
-        return JSON.parse(data);
+// 이미지 저장 폴더 설정
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const uploadPath = path.join(__dirname, '../public/uploads');
+        if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath, { recursive: true });
+        cb(null, uploadPath);
+    },
+    filename: (req, file, cb) => {
+        const uniqueName = `user_${Date.now()}_${file.originalname}`;
+        cb(null, uniqueName);
     }
-    return {};
+});
+const upload = multer({ storage });
+
+
+
+
+
+
+// Base64 이미지 파일 변환 및 저장 함수
+function saveBase64Image(base64Data, filename) {
+    const uploadDir = path.join(__dirname, '../public/uploads');
+    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+
+    const filePath = path.join(uploadDir, filename);
+    const base64Image = base64Data.replace(/^data:image\/\w+;base64,/, ""); // Base64 헤더 제거
+    fs.writeFileSync(filePath, base64Image, { encoding: "base64" });
+
+    return `/uploads/${filename}`; // 저장된 파일 경로 반환
 }
 
-// 데이터베이스 저장
-function saveDatabase(database) {
-    fs.writeFileSync(DATABASE_PATH, JSON.stringify(database, null, 4));
-}
-// 회원 등록 요청 처리
+
+// 회원 가입 API (웹캠 사진 포함)
 const bcrypt = require('bcrypt');
 const saltRounds = 10; //해싱 강도
-app.post('/register-user', async (req, res) => {
+app.post('/register-user', upload.single('face_image'),async (req, res) => {
     const { username, user_id, password } = req.body;
+    const faceImage = req.file; //업로드한 얼굴 이미지
   
 
-    if (!username || !user_id || !password) {
+    if (!username || !user_id || !password || !faceImage) {
         return res.status(400).json({ error: '모든 필수 정보를 입력해야 합니다.' });
     }
 
@@ -267,10 +273,12 @@ app.post('/register-user', async (req, res) => {
     try {
         //비밀번호 해싱
         const hashedPassword = await bcrypt.hash(password, saltRounds);
-        //해싱된 비밀번호를 DB에 저장
-        const query = `INSERT INTO users (username, user_id, password) VALUES (?, ?, ?)`;
+        const imagePath = `/uploads/${faceImage.filename}`; //저장된 이미지 경로
 
-        connection.query(query, [username, user_id, hashedPassword], (err, results) => {
+        //해싱된 비밀번호를 DB에 저장
+        const query = `INSERT INTO users (username, user_id, password, face_image_path) VALUES (?, ?, ?, ?)`;
+
+        connection.query(query, [username, user_id, hashedPassword, imagePath], (err, results) => {
             if (err) {
                 console.error('회원 등록 실패:', err);
                 return res.status(500).json({ error: '회원 등록 중 오류가 발생했습니다.' });
@@ -279,11 +287,10 @@ app.post('/register-user', async (req, res) => {
             res.status(200).json({ message: '회원 등록 성공', userId: results.insertId });
         });
     } catch (error) {
-        console.error('비밀번호 해싱 오류:' , error);
-        res.status(500).json({ error: '비밀번호 해싱 중 오류가 발생했습니다.'});
+        console.error('회원가입 오류:' , error);
+        res.status(500).json({ error: '서버 오류'});
     }   
 });
-
 
 
 
@@ -302,6 +309,23 @@ app.get('/orders', (req, res) => {
 app.get('/order', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'hall_order.html'));
 });
+
+//로그인 API
+app.get('/face-login', async (req, res) => {
+    const { spawn } = require('child_process');
+    const pythonProcess = spawn('python3', ['face_recognition/face_login.py']);
+
+    pythonProcess.stdout.on('data', (data) => {
+        const user_id = data.toString().trim();
+        
+        if (user_id) {
+            res.json({ success: true, username: user_id });
+        } else {
+            res.json({ success: false });
+        }
+    });
+});
+
 
 
 
@@ -333,6 +357,10 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/order.html');
 });
 
+// // 회원 등록 페이지 라우팅
+// app.get('/customer_registration', (req, res) => {
+//     res.sendFile(__dirname + '/public/customer_registration.html');
+// });
 // // 회원 등록 페이지 라우팅
 // app.get('/customer_registration', (req, res) => {
 //     res.sendFile(__dirname + '/public/customer_registration.html');

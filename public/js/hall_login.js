@@ -3,6 +3,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById('loginForm');
     const guestOrderButton = document.getElementById("guestOrderButton");
     const registerButton = document.getElementById("client_registration");
+    const faceLoginButton = document.getElementById("faceLoginButton"); // 👤 얼굴 인식 로그인 버튼
+    const messageBox = document.getElementById("message")
+
+
+
     
     //로그인 폼 제출 이벤트 리스너
     if (loginForm) {
@@ -11,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const user_id = document.getElementById('userid').value.trim();
         const password = document.getElementById('password').value.trim();
-        const messageBox = document.getElementById('message');
 
         try {
             // 서버로 로그인 요청 보내기
@@ -48,6 +52,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 }
+// 👤 얼굴 인식 로그인 처리
+if (faceLoginButton) {
+    faceLoginButton.addEventListener("click", async () => {
+        messageBox.textContent = "👀 얼굴 인식을 시작합니다...";
+
+        try {
+            const response = await fetch("http://localhost:5000/face-login");
+            const data = await response.json();
+
+            if (data.success) {
+                sessionStorage.setItem("user_id", data.username); // 🔹 얼굴 인식 로그인 성공 시 user_id 저장
+                alert(`✅ 얼굴 인식 로그인 성공! ${data.username}님`);
+                window.location.href = "/member_hall_order.html"; // 🔹 로그인 성공 시 이동
+            } else {
+                messageBox.textContent = "❌ 얼굴 인식 실패. 다시 시도하세요.";
+            }
+        } catch (error) {
+            console.error("🚨 얼굴 인식 요청 오류:", error);
+            messageBox.textContent = "❌ 서버 오류가 발생했습니다.";
+        }
+    });
+}
+
+
 
 // 비회원 주문 버튼 클릭 시 비회원 매장 주문 페이지로 이동
 if (guestOrderButton) {
@@ -62,6 +90,7 @@ if (guestOrderButton) {
         if (registerButton) {
             registerButton.addEventListener("click", (event) => {
                 event.preventDefault();
+                console.log("회원가입 페이지로 이동");
                 window.location.href = "/client_registration.html";  // 회원가입 페이지로 이동
             });
         }

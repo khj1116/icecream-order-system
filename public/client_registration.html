@@ -15,6 +15,16 @@
         <div class="registration_box">
             <h2>회원가입</h2>
             <form id="registerForm">
+
+                <!--웹캠 영상 및 사진 촬영 버튼 추가-->
+                <div class="webcam-container">
+                    <video id="webcam" autoplay></video>
+                    <canvas id="capturedCanvas" style="display: none;"></canvas>
+                    <button type="button" id="captureButton">📸 얼굴 촬영</button>
+                </div>
+                
+                <br>
+
                 <label for="username">이름:</label>
                 <input type="text" id="username" name="username" required placeholder="이름을 입력하세요">
                 
