@@ -121,3 +121,4 @@ app.post('/register-user', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Face Registration Server is running on http://localhost:${PORT}`);
 });
+//커밋//

@@ -1,3 +1,4 @@
+/*커밋*/
 // 모든 주문 내역 테이블 업데이트
 fetch('/api/all_orders')
     .then(response => response.json())

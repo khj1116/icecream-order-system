@@ -113,3 +113,4 @@ document.getElementById("goToLoginButton").addEventListener("click", function ()
     window.location.href = "/login";  // ✅ login.html이 아니라 /login으로 요청
 });
 
+/*커밋*/
