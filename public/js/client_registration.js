@@ -97,40 +97,35 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         
 
-
-            // 응답이 JSON인지 확인 후 처리
-        //     if (contentType && contentType.includes("application/json")) {
-        //         const data = await response.json();
-        //         if (data.success) {
-        //             alert("회원가입 성공! 로그인해주세요.");
-        //             window.location.href = "/hall_login.html"; // 로그인 페이지로 이동
-        //         } else {
-        //             messageBox.textContent = `회원가입 실패: ${data.message}`;
-        //         }
-        //     } else {
-        //         console.error("서버가 JSON이 아닌 응답을 반환함");
-        //         messageBox.textContent = "서버 응답이 올바르지 않습니다.";
-        //     }
-        // } catch (error) {
-        //     console.error("회원가입 요청 실패:", error);
-        //     messageBox.textContent = "서버에 연결할 수 없습니다.";
-        // }
             const data = await response.json();
 
-            if (data.success) {
-                messageBox.textContent = "회원가입 성공! 로그인 페이지로 이동하세요.";
-                messageBox.style.color = "green";
+            if (!response.ok || !data.success) {  // 서버 응답이 실패한 경우 처리
+                console.error("회원가입 오류:", data.message);
+                messageBox.textContent = `회원가입 실패: ${data.message}`;
+                messageBox.style.color = "red";
+                return;
+            }
+
+            // 회원가입 성공 시 올바른 메시지를 표시
+            messageBox.textContent = "회원가입 성공! 로그인 페이지로 이동하세요.";
+            messageBox.style.color = "green";
+    
+
+            // if (data.success) {
+            //     messageBox.textContent = "회원가입 성공! 로그인 페이지로 이동하세요.";
+            //     messageBox.style.color = "green";
                 setTimeout(() => {
                     window.location.href = "/hall_login.html"; // 로그인 페이지로 이동
                 }, 2000);
-            } else {
-                messageBox.textContent = `회원가입 실패: ${data.message}`;
-                messageBox.style.color = "red";
-            }
+            // } else {
+            //     messageBox.textContent = `회원가입 실패: ${data.message}`;
+            //     messageBox.style.color = "red";
+            // }
 
         } catch (error) {
             console.error("회원가입 요청 실패:", error);
             messageBox.textContent = "서버에 연결할 수 없습니다.";
+            messageBox.style.color = "red";
         }
 
         

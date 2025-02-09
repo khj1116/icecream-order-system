@@ -313,14 +313,14 @@ app.post('/register-user', async (req, res) => {
         connection.query(query, [username, user_id, hashedPassword, imagePath], (err, results) => {
             if (err) {
                 console.error('회원 등록 실패:', err);
-                return res.status(500).json({ success: false, message: "❌ 회원 등록 중 오류가 발생했습니다." });
+                return res.status(500).json({ success: false, message: "회원 등록 중 오류가 발생했습니다." });
             }
     
-            res.status(200).json({ message: '  회원 등록 성공', userId: results.insertId });
+            res.status(200).json({ success: true, message: '회원 등록 성공', userId: results.insertId });
         });
     } catch (error) {
         console.error('회원가입 오류:' , error);
-        res.status(500).json({ success: false, message: "❌ 서버 오류 발생" });
+        res.status(500).json({ success: false, message: "서버 오류 발생" });
     }   
 });
 
