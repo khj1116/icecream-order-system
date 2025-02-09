@@ -73,7 +73,7 @@ socket.on('update_orders', function(data) {
             existingOrderIds.add(order.id);
             sessionStorage.setItem("existingOrderIds", JSON.stringify([...existingOrderIds]));
         } else {
-            console.log("🚫 이미 존재하는 주문이므로 추가하지 않음:", order.id);
+            console.log("이미 존재하는 주문이므로 추가하지 않음:", order.id);
         }
 
         
@@ -81,6 +81,24 @@ socket.on('update_orders', function(data) {
 
     
 });
+
+// 영어 → 한글 변환 매핑
+const translationMap = {
+    "blueberry": "블루베리",
+    "vanilla": "바닐라",
+    "strawberry": "딸기",
+    
+    "Hand Heart": "손 하트",
+    "Bear ear": "곰돌이 귀",
+    "ET": "ET",
+
+    "joripong": "조리퐁",
+    "cocoball": "코코볼",
+    "sunflower_seed": "해바라기씨",
+
+    "hall": "매장 주문",
+    "takeout": "포장 주문"
+};
 
 // 주문을 테이블에 추가하는 함수
 function addOrderToTable(order) {
@@ -90,6 +108,12 @@ function addOrderToTable(order) {
         console.error("주문을 추가할 테이블을 찾을 수 없습니다.");
         return;
     }
+    // 한글로 변환된 데이터 사용
+    const translatedFlavor = translationMap[order.flavor] || order.flavor;
+    const translatedPerform = translationMap[order.perform] || order.perform;
+    const translatedTopping = translationMap[order.topping] || order.topping;
+    const translatedOrderType = translationMap[order.orderType] || order.orderType;
+    
     console.log("주문을 테이블에 추가:", order); // 디버깅용 로그 추가
 
     if (!existingOrderIds.has(order.id)) {
@@ -100,10 +124,10 @@ function addOrderToTable(order) {
         const row = document.createElement("tr");
         row.innerHTML = `
             <td>${order.id}</td>
-            <td>${order.flavor}</td>
-            <td>${order.perform}</td>
-            <td>${order.topping}</td>
-            <td>${order.orderType}</td>
+            <td>${translatedFlavor}</td>
+            <td>${translatedPerform}</td>
+            <td>${translatedTopping}</td>
+            <td>${translatedOrderType}</td>
             <td>${customerType}</td>
         `;
         liveTableBody.appendChild(row);
