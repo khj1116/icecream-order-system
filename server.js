@@ -177,6 +177,8 @@ app.get('/api/live_orders', (req, res) => {
             console.error('주문 데이터 로드 실패:', err);
             return res.status(500).json({ error: 'DB 로드 중 오류가 발생했습니다.' });
         }
+       
+
         res.json(results);
     });
 });

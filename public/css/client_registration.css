@@ -3,12 +3,12 @@ body {
     font-family: 'Baloo 2', cursive;
     margin: 0;
     padding: 0;
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     background: linear-gradient(120deg, #FFD700, #FF69B4);
-    overflow: hidden;
+    overflow-y: auto;
 }
 
 /* 회원가입 컨테이너 */
@@ -16,6 +16,8 @@ body {
     text-align: center;
     color: #fff;
     animation: fadeIn 1s ease-in-out;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 /* 제목 스타일 */
@@ -34,7 +36,7 @@ h1 {
 /* 회원가입 박스 */
 .registration_box {
     background: rgba(255, 255, 255, 0.9);
-    padding: 25px;
+    padding: 30px;
     border-radius: 15px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     width: 350px;
@@ -56,6 +58,8 @@ h1 {
     flex-direction: column;
     align-items: center;
     width: 100%;
+    max-height: 100%;
+    overflow-y: auto;
 }
 
 /* 입력 필드 및 라벨 스타일 */
@@ -80,6 +84,19 @@ h1 {
     background-color: #fff;
     outline: none;
 }
+/* 메시지 스타일 */
+#message {
+    margin-top: 15px;
+    font-weight: bold;
+    font-size: 16px;
+    color: #000;  
+    text-align: center;
+}
+
+/* 성공 메시지 */
+.success-message {
+    color: green;
+}
 
 /* 플레이스홀더 색상 */
 input::placeholder {
@@ -99,6 +116,15 @@ input::placeholder {
     cursor: pointer;
     transition: 0.3s;
     margin-top: 10px;
+}
+
+/* 스크롤바 스타일 (웹 브라우저별 적용 가능) */
+.registration_box::-webkit-scrollbar {
+    width: 8px;
+}
+
+.registration_box::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.3);
 }
 
 button:hover {

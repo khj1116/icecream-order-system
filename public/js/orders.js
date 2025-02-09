@@ -97,7 +97,7 @@ const translationMap = {
     "sunflower_seed": "해바라기씨",
 
     "hall": "매장 주문",
-    "takeout": "포장 주문"
+    "packed": "포장 주문"
 };
 
 // 주문을 테이블에 추가하는 함수
