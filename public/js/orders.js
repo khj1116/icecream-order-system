@@ -30,7 +30,7 @@ window.onload = function() {
     fetch('/api/live_orders')
         .then(response => response.json())
         .then(data => {
-            console.log("📥 기존 주문 내역 로드 완료", data);
+            console.log("기존 주문 내역 로드 완료", data);
 
             // 기존 데이터를 유지하면서 새로 불러온 주문을 추가 (아래로 추가)
             data.forEach(order => {
@@ -47,7 +47,7 @@ window.onload = function() {
 // 뒤로 가기 시 `sessionStorage` 초기화
 window.addEventListener("pageshow", function (event) {
     if (event.persisted) {
-        //sessionStorage.removeItem("orderHistoryLoaded");
+        
         sessionStorage.removeItem("existingOrderIds");
     }
 });
@@ -62,7 +62,7 @@ socket.on('update_orders', function(data) {
 
 
     if (!liveTableBody) {
-        console.error("❌ 테이블을 찾을 수 없습니다. orders.js를 확인하세요.");
+        console.error("테이블을 찾을 수 없습니다. orders.js를 확인하세요.");
         return;
     }
 
@@ -87,7 +87,7 @@ function addOrderToTable(order) {
     liveTableBody = document.querySelector("#orders-table tbody"); //  항상 테이블을 다시 찾음
 
     if (!liveTableBody) {
-        console.error("❌ 주문을 추가할 테이블을 찾을 수 없습니다.");
+        console.error("주문을 추가할 테이블을 찾을 수 없습니다.");
         return;
     }
     console.log("주문을 테이블에 추가:", order); // 디버깅용 로그 추가
@@ -113,4 +113,4 @@ function addOrderToTable(order) {
     }
 }
 
-/*커밋*/
+

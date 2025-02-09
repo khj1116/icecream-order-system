@@ -77,8 +77,7 @@ let liveOrders = [];  //실시간 주문 데이터를 저장할 배열
 // 주문 처리 (실시간 + 영구 저장)
 app.post('/order', async(req, res) => {
     console.log('POST /order 요청 수신'); //요청 수신 확인 로그 추가
-    //req.body 출력
-    // console.log('req.body:', req.body);
+    
 
         // //클라이언트에서 받은 주문 데이터
         const { flavor, perform, topping, orderType, username, user_id } = req.body;
