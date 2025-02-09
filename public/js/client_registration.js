@@ -15,6 +15,16 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
+    // 이전 로그인 페이지 기억하기 (URL에서 from 값을 가져옴)
+    const urlParams = new URLSearchParams(window.location.search);
+    const previousPage = urlParams.get("from");
+
+    if (previousPage) {
+        console.log(`이전 페이지 저장: ${previousPage}`);
+        sessionStorage.setItem("previousPage", previousPage); // 이전 로그인 페이지 저장
+    }
+
+
 
     // 1.웹캠 활성화
     async function startWebcam() {
@@ -111,17 +121,18 @@ document.addEventListener("DOMContentLoaded", () => {
             messageBox.style.color = "green";
     
 
-            // if (data.success) {
-            //     messageBox.textContent = "회원가입 성공! 로그인 페이지로 이동하세요.";
-            //     messageBox.style.color = "green";
-                setTimeout(() => {
-                    window.location.href = "/hall_login.html"; // 로그인 페이지로 이동
-                }, 2000);
-            // } else {
-            //     messageBox.textContent = `회원가입 실패: ${data.message}`;
-            //     messageBox.style.color = "red";
-            // }
-
+            
+            setTimeout(() => {
+                const storedPreviousPage = sessionStorage.getItem("previousPage");
+                if (storedPreviousPage && (storedPreviousPage.includes("hall") || storedPreviousPage.includes("takeout"))) {
+                    console.log(`회원가입 후 이동할 페이지: ${storedPreviousPage}`);
+                    window.location.href = storedPreviousPage;
+                } else {
+                    console.warn("이전 페이지 정보가 없어 기본 페이지로 이동");
+                    window.location.href = "/hall_login.html"; // 기본 이동 경로
+                }
+            }, 2000);
+            
         } catch (error) {
             console.error("회원가입 요청 실패:", error);
             messageBox.textContent = "서버에 연결할 수 없습니다.";

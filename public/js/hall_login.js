@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // 👤 얼굴 인식 로그인 처리
 if (faceLoginButton) {
     faceLoginButton.addEventListener("click", async () => {
-        messageBox.textContent = "👀 얼굴 인식을 시작합니다. 잠시만 기다려 주세요...";
+        messageBox.textContent = "얼굴 인식을 시작합니다. 잠시만 기다려 주세요...";
 
         try {
             const response = await fetch("http://localhost:5000/face-login");
@@ -63,7 +63,7 @@ if (faceLoginButton) {
             // 응답이 JSON인지 확인 후 처리
             const contentType = response.headers.get("content-type");
             if (!response.ok) {
-                throw new Error("❌ 얼굴 인식 요청 실패: 서버 응답 오류");
+                throw new Error("얼굴 인식 요청 실패: 서버 응답 오류");
             }
 
             if (contentType && contentType.includes("application/json")) {
@@ -75,14 +75,14 @@ if (faceLoginButton) {
                     alert(`✅ 얼굴 인식 로그인 성공! ${data.username}님`);
                     window.location.href = "/member_hall_order.html"; // 🔹 로그인 성공 시 이동
                 } else {
-                    messageBox.textContent = "❌ 얼굴 인식 실패. 다시 시도하세요.";
+                    messageBox.textContent = "얼굴 인식 실패. 다시 시도하세요.";
                 }
             } else {
-                throw new Error("❌ 서버가 올바른 JSON을 반환하지 않음");
+                throw new Error("서버가 올바른 JSON을 반환하지 않음");
             }
         } catch (error) {
-            console.error("🚨 얼굴 인식 요청 오류:", error);
-            messageBox.textContent = "❌ 서버 오류가 발생했습니다. 다시 시도하세요.";
+            console.error("얼굴 인식 요청 오류:", error);
+            messageBox.textContent = "서버 오류가 발생했습니다. 다시 시도하세요.";
         }
     });
 }
@@ -104,12 +104,12 @@ if (guestOrderButton) {
             registerButton.addEventListener("click", (event) => {
                 event.preventDefault();
                 console.log("회원가입 페이지로 이동");
-                window.location.href = "/client_registration.html";  // 회원가입 페이지로 이동
+                window.location.href = "/client_registration.html?from=hall_login.html";  // 회원가입 페이지로 이동
             });
         }
     });
 
-    /*커밋*/
+
 
     
     

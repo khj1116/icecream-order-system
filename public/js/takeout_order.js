@@ -62,11 +62,11 @@ if (guestOrderButton) {
         if (registerButton) {
             registerButton.addEventListener("click", (event) => {
                 event.preventDefault();
-                window.location.href = "/client_registration.html";  // 회원가입 페이지로 이동
+                window.location.href = "/client_registration.html?from=/takeout_order.html";  // 회원가입 페이지로 이동
             });
         }
     });
 
-/*커밋*/
+
     
         
