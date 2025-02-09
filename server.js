@@ -370,7 +370,7 @@ app.get('/face-login', async (req, res) => {
         if (!responseSent) {
             console.error("⏳ 얼굴 인식 응답 지연 - 강제 응답 반환");
             pythonProcess.kill();
-            res.status(500).json({ success: false, message: "❌ 얼굴 인식 시간이 초과되었습니다." });
+            res.status(500).json({ success: false, message: "얼굴 인식 시간이 초과되었습니다." });
             responseSent = true;
         }
     }, 45000);
@@ -380,30 +380,30 @@ app.get('/face-login', async (req, res) => {
         clearTimeout(timeout);
 
         let user_id = data.toString().trim();
+
         // **불필요한 로그 제거**
         user_id = user_id.split("\n").pop().trim();
+         
 
-       
+        // console.log(`얼굴 인식된 사용자 ID: '${user_id}'`);
 
-        // 불필요한 경로 및 메시지 제거
-        user_id = user_id.replace("얼굴 이미지 저장 완료:", "").trim();
-        user_id = user_id.replace("/home/addinedu/icecream-order/face_recognition/output/compare_img.jpg", "").trim();
+        // // 불필요한 경로 및 메시지 제거
+        // user_id = user_id.replace("얼굴 이미지 저장 완료:", "").trim();
+        // user_id = user_id.replace("/home/addinedu/icecream-order/face_recognition/output/compare_img.jpg", "").trim();
+
+        // console.log(`얼굴 인식된 사용자 ID: '${user_id}'`);
+
+        // 
+        
+         // DeepFace 로그가 아닌 경우만 처리
+        if (!user_id || user_id.includes("Found") || user_id.includes("Searching") || user_id.includes("representations")) {
+            console.log("❌ 얼굴 인식 실패: 매칭된 사용자 없음");
+            res.status(400).json({ success: false, message: "얼굴을 인식할 수 없습니다." });
+            responseSent = true;
+            return;
+        }
 
         console.log(`📸 얼굴 인식된 사용자 ID: '${user_id}'`);
-
-        if (user_id === "NO_FACE") {
-            console.log("❌ 얼굴 인식 실패: 얼굴을 감지할 수 없음");
-            res.status(400).json({ success: false, message: "얼굴을 감지할 수 없습니다. 다시 시도하세요." });
-            responseSent = true;
-            return;
-        }
-
-        if (user_id === "ERROR") {
-            console.log("❌ 얼굴 인식 중 오류 발생");
-            res.status(500).json({ success: false, message: "서버 오류로 얼굴 인식이 실패했습니다." });
-            responseSent = true;
-            return;
-        }
 
         // DB에서 회원 정보 확인
         try {
@@ -415,18 +415,20 @@ app.get('/face-login', async (req, res) => {
 
             if (rows.length > 0) {
                 const username = rows[0].username;
-                console.log(`✅ 얼굴 인식 성공! ${username}님 로그인`);
+                console.log(`얼굴 인식 성공! ${username}님 로그인`);
                 res.json({ success: true, username });
             } else {
-                console.log(`❌ 데이터베이스에서 회원을 찾을 수 없음 (user_id: ${user_id})`);
+                console.log(`데이터베이스에서 회원을 찾을 수 없음 (user_id: ${user_id})`);
                 res.status(404).json({ success: false, message: "회원 정보가 존재하지 않습니다." });
             }
             responseSent = true;
 
         } catch (error) {
-            console.error("❌ DB 조회 오류:", error);
-            res.status(500).json({ success: false, message: "서버 오류 발생" });
-            responseSent = true;
+            console.error("DB 조회 오류:", error);
+            if (!responseSent) {
+                res.status(500).json({ success: false, message: "서버 오류 발생" });
+                responseSent = true;
+            }
         }
     });
 

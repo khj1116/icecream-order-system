@@ -92,15 +92,9 @@ class Detectface:
                                 
                                 filename = os.path.basename(identity)
                                 if filename.startswith("user_") and filename.endswith(".jpg"):
-                                    user_id = filename.replace("user_", "").replace(".jpg","")
-                                    # **불필요한 로그 제거**
-                                    if "\n" in user_id:
-                                        user_id = user_id.split("\n")[-1].strip()
-                                    
-                                    
-                                    self.user = user_id
-                                    print(f"얼굴 인식 성공! 사용자: {self.user}")
-                                    return self.user
+                                    user_id = filename.replace("user_", "").replace(".jpg","").strip()
+                                    print(user_id)
+                                    return user_id
 
                                    
                                     
