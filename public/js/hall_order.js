@@ -216,6 +216,55 @@ const languageButton = document.getElementById('languageButton');
 
         /*커밋*/
 
+        document.addEventListener("DOMContentLoaded", async () => {
+            const usernameDisplay = document.getElementById("username");
+            const recommendationBox = document.getElementById("recommendations");
+        
+            // 저장된 user_id 가져오기
+            const userId = sessionStorage.getItem("user_id");
+        
+            if (!userId) {
+                console.error("❌ 로그인된 사용자 정보 없음!");
+                return;
+            }
+        
+            console.log(`🔍 로그인한 사용자: ${userId}`);
+        
+            // 🔹 회원 정보 가져오기
+            try {
+                const response = await fetch(`http://localhost:5000/api/get-user-info/${userId}`);
+                const data = await response.json();
+        
+                if (data.success) {
+                    usernameDisplay.textContent = `${data.username}님! 안녕하세요!`;
+                } else {
+                    console.error("❌ 회원 정보 로드 실패:", data.message);
+                }
+            } catch (error) {
+                console.error("❌ 회원 정보 요청 오류:", error);
+            }
+        
+            // 🔹 추천 메뉴 가져오기
+            try {
+                const res = await fetch(`http://localhost:5000/api/recommendations/${userId}`);
+                const menuData = await res.json();
+        
+                if (menuData.length > 0) {
+                    recommendationBox.innerHTML = `
+                        <h3>🍨 ${userId}님의 추천 메뉴</h3>
+                        <ul>
+                            ${menuData.map(item => `<li>${item.flavor} + ${item.perform} + ${item.topping}</li>`).join('')}
+                        </ul>
+                    `;
+                } else {
+                    recommendationBox.innerHTML = `<p>최근 주문 내역이 없습니다.</p>`;
+                }
+            } catch (error) {
+                console.error("❌ 추천 메뉴 요청 오류:", error);
+            }
+        });
+        
+
 
         
 

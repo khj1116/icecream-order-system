@@ -120,6 +120,22 @@ app.post('/order', async(req, res) => {
         }
     });
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // 특정 회원의 최근 3개 주문 조회 API
 app.get('/api/recommendations/:user_id', async (req, res) => {
     const { user_id } = req.params;
@@ -247,26 +263,40 @@ const upload = multer({ storage });
 
 // Base64 이미지 파일 변환 및 저장 함수
 function saveBase64Image(base64Data, filename) {
-    const uploadDir = path.join(__dirname, '../public/uploads');
-    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+    try {
+        const uploadDir = path.join(__dirname, 'public/uploads');
+        if (!fs.existsSync(uploadDir)) {
+            console.log("📁 uploads 폴더 생성 중...");
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
 
-    const filePath = path.join(uploadDir, filename);
-    const base64Image = base64Data.replace(/^data:image\/\w+;base64,/, ""); // Base64 헤더 제거
-    fs.writeFileSync(filePath, base64Image, { encoding: "base64" });
+        const filePath = path.join(uploadDir, filename);
+        const base64Image = base64Data.replace(/^data:image\/\w+;base64,/, ""); 
 
-    return `/uploads/${filename}`; // 저장된 파일 경로 반환
+        fs.writeFileSync(filePath, base64Image, { encoding: "base64" });
+        console.log(`✅ 얼굴 이미지 저장 완료: ${filePath}`);
+
+        return `/uploads/${filename}`; 
+
+
+    } catch (error) {
+        console.error("❌ 얼굴 이미지 저장 오류:", error);
+        return null;
+    }
+    
 }
 
 
 // 회원 가입 API (웹캠 사진 포함)
 const bcrypt = require('bcrypt');
 const saltRounds = 10; //해싱 강도
-app.post('/register-user', upload.single('face_image'),async (req, res) => {
-    const { username, user_id, password } = req.body;
-    const faceImage = req.file; //업로드한 얼굴 이미지
+app.post('/register-user', async (req, res) => {
+
+    const { username, user_id, password, face_image } = req.body;
+    // const faceImage = req.file; //업로드한 얼굴 이미지
   
 
-    if (!username || !user_id || !password || !faceImage) {
+    if (!username || !user_id || !password || !face_image) {
         return res.status(400).json({ error: '모든 필수 정보를 입력해야 합니다.' });
     }
 
@@ -274,7 +304,7 @@ app.post('/register-user', upload.single('face_image'),async (req, res) => {
     try {
         //비밀번호 해싱
         const hashedPassword = await bcrypt.hash(password, saltRounds);
-        const imagePath = `/uploads/${faceImage.filename}`; //저장된 이미지 경로
+        const imagePath = saveBase64Image(face_image, `user_${user_id}.jpg`); 
 
         //해싱된 비밀번호를 DB에 저장
         const query = `INSERT INTO users (username, user_id, password, face_image_path) VALUES (?, ?, ?, ?)`;
@@ -282,14 +312,14 @@ app.post('/register-user', upload.single('face_image'),async (req, res) => {
         connection.query(query, [username, user_id, hashedPassword, imagePath], (err, results) => {
             if (err) {
                 console.error('회원 등록 실패:', err);
-                return res.status(500).json({ error: '회원 등록 중 오류가 발생했습니다.' });
+                return res.status(500).json({ success: false, message: "❌ 회원 등록 중 오류가 발생했습니다." });
             }
     
-            res.status(200).json({ message: '회원 등록 성공', userId: results.insertId });
+            res.status(200).json({ message: '  회원 등록 성공', userId: results.insertId });
         });
     } catch (error) {
         console.error('회원가입 오류:' , error);
-        res.status(500).json({ error: '서버 오류'});
+        res.status(500).json({ success: false, message: "❌ 서버 오류 발생" });
     }   
 });
 
@@ -314,18 +344,127 @@ app.get('/order', (req, res) => {
 //로그인 API
 app.get('/face-login', async (req, res) => {
     const { spawn } = require('child_process');
-    const pythonProcess = spawn('python3', ['face_recognition/face_login.py']);
 
-    pythonProcess.stdout.on('data', (data) => {
-        const user_id = data.toString().trim();
-        
-        if (user_id) {
-            res.json({ success: true, username: user_id });
-        } else {
-            res.json({ success: false });
+    console.log("⚡ Python 얼굴 인식 프로세스 실행 시작");
+
+    const pythonProcess = spawn('/usr/bin/python3', [__dirname + '/face_recognition/face_login.py'], {
+        env: { 
+            ...process.env,
+            TF_ENABLE_ONEDNN_OPTS: '0',
+            TF_CPP_MIN_LOG_LEVEL: '2',
+            CUDA_VISIBLE_DEVICES: '0',
+            TF_FORCE_GPU_ALLOW_GROWTH: 'true',
+            LD_LIBRARY_PATH: '/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64',
+            QT_QPA_PLATFORM: "offscreen",
+            DB_PATH: __dirname + '/face_recognition/uploads',
+            DISPLAY: undefined
+        },
+        stdio: ['ignore', 'pipe', 'pipe']
+    });
+
+    console.log("📷 얼굴 인식 Python 프로세스 시작됨");
+    let responseSent = false;
+
+    // 45초 제한 타이머 설정 (DeepFace 인식 시간이 오래 걸릴 수 있음)
+    let timeout = setTimeout(() => {
+        if (!responseSent) {
+            console.error("⏳ 얼굴 인식 응답 지연 - 강제 응답 반환");
+            pythonProcess.kill();
+            res.status(500).json({ success: false, message: "❌ 얼굴 인식 시간이 초과되었습니다." });
+            responseSent = true;
+        }
+    }, 45000);
+
+    pythonProcess.stdout.on('data', async (data) => {
+        if (responseSent) return;
+        clearTimeout(timeout);
+
+        let user_id = data.toString().trim();
+        // **불필요한 로그 제거**
+        user_id = user_id.split("\n").pop().trim();
+
+       
+
+        // 불필요한 경로 및 메시지 제거
+        user_id = user_id.replace("얼굴 이미지 저장 완료:", "").trim();
+        user_id = user_id.replace("/home/addinedu/icecream-order/face_recognition/output/compare_img.jpg", "").trim();
+
+        console.log(`📸 얼굴 인식된 사용자 ID: '${user_id}'`);
+
+        if (user_id === "NO_FACE") {
+            console.log("❌ 얼굴 인식 실패: 얼굴을 감지할 수 없음");
+            res.status(400).json({ success: false, message: "얼굴을 감지할 수 없습니다. 다시 시도하세요." });
+            responseSent = true;
+            return;
+        }
+
+        if (user_id === "ERROR") {
+            console.log("❌ 얼굴 인식 중 오류 발생");
+            res.status(500).json({ success: false, message: "서버 오류로 얼굴 인식이 실패했습니다." });
+            responseSent = true;
+            return;
+        }
+
+        // DB에서 회원 정보 확인
+        try {
+            console.log(`🔍 DB에서 조회하는 user_id: '${user_id}'`);
+            const [rows] = await connection.promise().query(
+                "SELECT username FROM users WHERE user_id = ?",
+                [user_id]
+            );
+
+            if (rows.length > 0) {
+                const username = rows[0].username;
+                console.log(`✅ 얼굴 인식 성공! ${username}님 로그인`);
+                res.json({ success: true, username });
+            } else {
+                console.log(`❌ 데이터베이스에서 회원을 찾을 수 없음 (user_id: ${user_id})`);
+                res.status(404).json({ success: false, message: "회원 정보가 존재하지 않습니다." });
+            }
+            responseSent = true;
+
+        } catch (error) {
+            console.error("❌ DB 조회 오류:", error);
+            res.status(500).json({ success: false, message: "서버 오류 발생" });
+            responseSent = true;
+        }
+    });
+
+    // Python 실행 중 에러 메시지 처리
+    pythonProcess.stderr.on('data', (data) => {
+        const errorMessage = data.toString();
+
+        // cuDNN, cuFFT 중복 등록 오류 무시 (실제 오류 아님)
+        if (errorMessage.includes("Unable to register cuDNN factory") ||
+            errorMessage.includes("Unable to register cuFFT factory") ||
+            errorMessage.includes("Unable to register cuBLAS factory")) {
+            return; // 해당 오류는 무시
+        }
+
+        console.error("❌ 얼굴 인식 오류 (상세 로그):", errorMessage);
+
+        if (!responseSent) {
+            responseSent = true;
+            pythonProcess.kill();
+            res.status(500).json({ success: false, message: "얼굴 인식 중 오류 발생" });
+        }
+    });
+
+    // Python 프로세스 종료 후 응답 반환
+    pythonProcess.on('close', (code) => {
+        if (!responseSent) {
+            console.error(`🚨 Python 얼굴 인식 프로세스 비정상 종료 (코드: ${code})`);
+            res.status(500).json({ success: false, message: "얼굴 인식 프로세스 종료 오류" });
+            responseSent = true;
         }
     });
 });
+
+
+
+
+
+
 
 
 

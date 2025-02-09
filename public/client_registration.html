@@ -6,6 +6,7 @@
     <title>회원가입 | Ice Cream Robot</title>
     <link rel="stylesheet" href="/css/client_registration.css">
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+   
 </head>
 <body>
     <div class="container">
@@ -18,7 +19,7 @@
 
                 <!--웹캠 영상 및 사진 촬영 버튼 추가-->
                 <div class="webcam-container">
-                    <video id="webcam" autoplay></video>
+                    <video id="webcam" autoplay style="width: 300px; height: 200px; border: 2px solid black;"></video>
                     <canvas id="capturedCanvas" style="display: none;"></canvas>
                     <button type="button" id="captureButton">📸 얼굴 촬영</button>
                 </div>
@@ -46,18 +47,20 @@
                 <br>
                 
                 <button type="submit">회원가입</button>
+                <p id="message"></p>
                 <button onclick="location.href='/login'">로그인 페이지로 이동</button>
             </form>
 
-            <p id="registerMessage" class="register-message"></p>
+            <!-- <p id="registerMessage" class="register-message"></p> -->
             
         </div>
 
 
     </div>
+    <script src="/js/client_registration.js" defer></script>
         
 
-    <script src="/js/client_registration.js" defer></script>
+   
 </body>
 </html>
 

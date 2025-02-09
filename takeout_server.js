@@ -1,4 +1,8 @@
-//커밋//
+//이 서버 코드의 기능//
+//포장 주문 관련 기능(포장 주문 DB에 저장)
+//포장 주문 로그인 처리(/login, /check-login, /logout)
+//포장 주문을 메인서버(server.js 5000번 포트로 전송, 주문내역 동기화)
+////////////////////////////////////////////////////////////////////
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -99,7 +103,7 @@ app.post('/api/register', async (req, res) => {
         // 비밀번호 암호화(해싱)
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         //MySQL 저장
-        const sql = "INSERT INTO users (username, user_id, password) VALUES (?, ?, ?)";
+        const sql = "INSERT INTO users (username, user_id, password, face_image_path) VALUES (?, ?, ?, NULL)";
 
         connection.query(sql, [username, user_id, hashedPassword], (err, results) => {
             if (err) {

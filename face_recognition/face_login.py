@@ -1,25 +1,45 @@
 # 커밋
+import os
+os.environ["QT_QPA_PLATFORM"] = "offscreen"
 import cv2 as cv
 import os
+import sys
 import time
+import tensorflow as tf
+from tensorflow import keras
 from deepface import DeepFace
 from model import detection_models, metrics, find_models
 
-# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["TF_TRT_ENABLED"] = "0"  #tensorRT 비활성화
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'   
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"  # GPU 메모리 문제 해결
+os.environ["LD_LIBRARY_PATH"] = "/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64"
 # OpenCV의 Haar Cascade 모델 경로 설정
-HAAR_CASCADE_PATH = "/home/addinedu/icecream-order/face_recognition/haarcascade_frontalface.xml"
+HAAR_CASCADE_PATH = os.path.join(os.path.dirname(__file__), "haarcascade_frontalface.xml")
+OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output")
+COMPARE_IMG_PATH = os.path.join(OUTPUT_DIR, "compare_img.jpg")
 
 # 회원 얼굴 이미지가 저장된 디렉토리 (Node.js에서 업로드된 경로)
-DB_PATH = os.path.join(os.getcwd(), "public", "uploads")
+DB_PATH = os.path.join(os.path.dirname(__file__), "uploads")
 
 class Detectface:
     def __init__(self):
         self.cap = cv.VideoCapture(0) #웹캠 활성화
+        if not self.cap.isOpened():  # 웹캠이 열리지 않는 경우 확인
+            print("웹캠을 열 수 없습니다! 카메라가 연결되어 있는지 확인하세요.")
+            sys.stdout.flush()
+            exit(1)  # 오류 발생 시 즉시 종료
+        self.cap.set(cv.CAP_PROP_BUFFERSIZE, 1)  # 프레임 버퍼 크기 제한
+        self.cap.set(cv.CAP_PROP_FPS, 15)  # FPS 제한하여 CPU 부하 줄이기
+        self.cap.set(cv.CAP_PROP_FRAME_WIDTH, 640)  # 해상도 낮추기
+        self.cap.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
         self.face_cascade = cv.CascadeClassifier(
             HAAR_CASCADE_PATH  #얼굴 감지 모델 로드
         )
-        self.output_dir = os.path.join(os.getcwd(), "face_recognition", "output")
+        self.output_dir = os.path.join(os.path.dirname(__file__), "output")
         os.makedirs(self.output_dir, exist_ok=True)  # 저장 디렉토리 생성
 
         self.compare_img_path = os.path.join(self.output_dir, "compare_img.jpg")
@@ -62,24 +82,39 @@ class Detectface:
                                 distance_metric=metrics[2],
                                 model_name=find_models[2], 
                                 normalization='Facenet',
-                                threshold=0.9
+                                threshold=0.8,
+                                enforce_detection=False
                             )
-                            # 얼굴 매칭 시
-                            if len(result) > 0 and not result[0].empty:
-                                identity = result[0]['identity']
-
-                                for compare_path in identity[:2]:  #매칭된 상위 2개 결과
-                                    user_id = os.path.basename(compare_path).split("_")[0] #파일명에서 user_id추출
+                            
+                            # # 얼굴 매칭 시
+                            if result and len(result) > 0 and not result[0].empty:
+                                identity = result[0]['identity'].iloc[0]  # 첫 번째 매칭된 얼굴 파일 경로 가져오기
+                                
+                                filename = os.path.basename(identity)
+                                if filename.startswith("user_") and filename.endswith(".jpg"):
+                                    user_id = filename.replace("user_", "").replace(".jpg","")
+                                    # **불필요한 로그 제거**
+                                    if "\n" in user_id:
+                                        user_id = user_id.split("\n")[-1].strip()
+                                    
+                                    
                                     self.user = user_id
+                                    print(f"얼굴 인식 성공! 사용자: {self.user}")
+                                    return self.user
 
-                                    if os.path.exists(compare_path):
-                                        print(f"로그인 성공! 사용자: {self.user}")
-                                        return self.user
+                                   
+                                    
                             print("매칭되는 얼굴을 찾을 수 없습니다.")
-                            return None
+                            return "No_MATCH"       
+                                        
+                                
+                                
+                
+                            
+                           
                         except Exception as e:
                             print(f"DeepFace 오류 발생: {str(e)}")
-                            return None
+                            return "ERROR"
                         
 
 
@@ -87,19 +122,27 @@ class Detectface:
                 self.face_detected_time = None
                 self.is_saved = False
 
-            for (x, y, w, h) in faces:
-                cv.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-                cv.putText(frame, "Detecting face...", (x, y - 10),
-                          cv.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+            # for (x, y, w, h) in faces:
+            #     cv.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+            #     cv.putText(frame, "Detecting face...", (x, y - 10),
+            #               cv.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
-            cv.imshow('frame', frame)
-            if cv.waitKey(1) == ord('q'):
-                break
+            # cv.imshow('frame', frame)
+            # if cv.waitKey(1) == ord('q'):
+            #     break
+            # if os.environ.get("DISPLAY"):  # DISPLAY 환경 변수가 설정된 경우에만 실행
+            #     cv.imshow('frame', frame)
+            #     if cv.waitKey(1) == ord('q'):
+            #         break
 
         self.cap.release()
         cv.destroyAllWindows()
+        return "NO_FACE"
+        
 
 if __name__ == "__main__":
     detect_face = Detectface()
     face_user = detect_face.detect_face()
-    print(face_user if face_user else "얼굴 인식 실패")
+    print(face_user)
+
+    

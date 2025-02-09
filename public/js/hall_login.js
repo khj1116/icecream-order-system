@@ -55,25 +55,38 @@ document.addEventListener("DOMContentLoaded", () => {
 // 👤 얼굴 인식 로그인 처리
 if (faceLoginButton) {
     faceLoginButton.addEventListener("click", async () => {
-        messageBox.textContent = "👀 얼굴 인식을 시작합니다...";
+        messageBox.textContent = "👀 얼굴 인식을 시작합니다. 잠시만 기다려 주세요...";
 
         try {
             const response = await fetch("http://localhost:5000/face-login");
-            const data = await response.json();
+            
+            // 응답이 JSON인지 확인 후 처리
+            const contentType = response.headers.get("content-type");
+            if (!response.ok) {
+                throw new Error("❌ 얼굴 인식 요청 실패: 서버 응답 오류");
+            }
 
-            if (data.success) {
-                sessionStorage.setItem("user_id", data.username); // 🔹 얼굴 인식 로그인 성공 시 user_id 저장
-                alert(`✅ 얼굴 인식 로그인 성공! ${data.username}님`);
-                window.location.href = "/member_hall_order.html"; // 🔹 로그인 성공 시 이동
+            if (contentType && contentType.includes("application/json")) {
+                const data = await response.json();
+                
+                if (data.success) {
+                    sessionStorage.setItem("user_id", data.username); // 🔹 얼굴 인식 로그인 성공 시 user_id 저장
+                    sessionStorage.setItem("username", data.username);
+                    alert(`✅ 얼굴 인식 로그인 성공! ${data.username}님`);
+                    window.location.href = "/member_hall_order.html"; // 🔹 로그인 성공 시 이동
+                } else {
+                    messageBox.textContent = "❌ 얼굴 인식 실패. 다시 시도하세요.";
+                }
             } else {
-                messageBox.textContent = "❌ 얼굴 인식 실패. 다시 시도하세요.";
+                throw new Error("❌ 서버가 올바른 JSON을 반환하지 않음");
             }
         } catch (error) {
             console.error("🚨 얼굴 인식 요청 오류:", error);
-            messageBox.textContent = "❌ 서버 오류가 발생했습니다.";
+            messageBox.textContent = "❌ 서버 오류가 발생했습니다. 다시 시도하세요.";
         }
     });
 }
+
 
 
 

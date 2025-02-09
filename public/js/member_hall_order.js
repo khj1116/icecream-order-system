@@ -137,20 +137,26 @@ const languageButton = document.getElementById('languageButton');
         });
 ////////////////////////////////////////////////////////////////////////////
     document.addEventListener("DOMContentLoaded", () => {
-        //회원 이름 가져오기
-        const username = sessionStorage.getItem("username");  
-        const welcomeText = document.getElementById("welcome-text");  //HTML 요소 가져오기
 
-        if (welcomeText) {  // 요소가 존재하는 경우에만 실행
+        console.log("sessionStorage 값 확인:");
+        console.log("sessionStorage.getItem('username'):", sessionStorage.getItem("username"));
+        console.log("sessionStorage.getItem('user_id'):", sessionStorage.getItem("user_id"));
+        
+        //회원 이름 가져오기
+         
+        const usernameDisplay = document.getElementById("username");  //HTML 요소 가져오기
+
+        if (usernameDisplay) {  // 요소가 존재하는 경우에만 실행
+            const username = sessionStorage.getItem("username"); 
             if (username && username !== "undefined" && username !== "null") {
-                welcomeText.textContent = `${username} 회원님! 안녕하세요.`;  // 템플릿 리터럴 사용
+                usernameDisplay.textContent = `${username} 님! 안녕하세요.`;  // 템플릿 리터럴 사용
                 console.log("회원 이름 표시:", username); // 디버깅 로그
             } else {
-                welcomeText.textContent = "환영합니다! 회원 전용 주문 페이지입니다.";
+                usernameDisplay.textContent = "환영합니다! 회원 전용 주문 페이지입니다.";
                 console.error("SessionStorage에 저장된 username이 없습니다.");
             }
         } else {
-            console.error("❌ 'welcome-text' 요소를 찾을 수 없습니다. HTML을 확인하세요.");
+            console.error(" 'username' 요소를 찾을 수 없습니다. HTML을 확인하세요.");
         }
     
         const orderForm = document.getElementById("orderForm");
@@ -344,21 +350,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     
 //로그인 유지 기능을 프론트 엔드에 추가
 document.addEventListener("DOMContentLoaded", async () => {
-    try {
-        const response = await fetch('/check-login', { credentials: 'include' });
-        const data = await response.json();
+    // sessionStorage에 username이 없으면 서버에서 가져옴
+    if (!sessionStorage.getItem("username")) {
+        try {
+            const response = await fetch('/check-login', { credentials: 'include' });
+            const data = await response.json();
 
-        if (data.success) {
-            const loginBoxHeader = document.querySelector(".login-box h2");
-            if (loginBoxHeader) { // 요소가 존재하는지 확인 후 설정
-                loginBoxHeader.textContent = `👋 안녕하세요, ${data.user.username}님!`;
-               
-            } else {
-                console.warn("⚠️ '.login-box h2' 요소를 찾을 수 없습니다. HTML 구조를 확인하세요.");
+            if (data.success && data.user.username) {
+                sessionStorage.setItem("username", data.user.username); // sessionStorage에 저장
+                sessionStorage.setItem("user_id", data.user.user_id);
+                console.log("서버에서 사용자 정보 가져와서 sessionStorage에 저장 완료");
             }
+        } catch (error) {
+            console.error("로그인 상태 확인 오류:", error);
         }
-    } catch (error) {
-        console.error("로그인 상태 확인 오류:", error);
+    }
+
+    // 저장된 username을 페이지에 표시
+    const usernameDisplay = document.getElementById("username");
+    const username = sessionStorage.getItem("username");
+
+    if (usernameDisplay) {
+        usernameDisplay.textContent = username ? `👤 ${username}님, 안녕하세요!` : "👤 환영합니다! 회원 전용 주문 페이지입니다.";
     }
 });
 
