@@ -265,9 +265,9 @@ const upload = multer({ storage });
 // Base64 이미지 파일 변환 및 저장 함수
 function saveBase64Image(base64Data, filename) {
     try {
-        const uploadDir = path.join(__dirname, 'public/uploads');
+        const uploadDir = path.join(__dirname, 'face_recognition/uploads');
         if (!fs.existsSync(uploadDir)) {
-            console.log("📁 uploads 폴더 생성 중...");
+            console.log("uploads 폴더 생성 중...");
             fs.mkdirSync(uploadDir, { recursive: true });
         }
 
@@ -275,9 +275,9 @@ function saveBase64Image(base64Data, filename) {
         const base64Image = base64Data.replace(/^data:image\/\w+;base64,/, ""); 
 
         fs.writeFileSync(filePath, base64Image, { encoding: "base64" });
-        console.log(`✅ 얼굴 이미지 저장 완료: ${filePath}`);
+        console.log(`얼굴 이미지 저장 완료: ${filePath}`);
 
-        return `/uploads/${filename}`; 
+        return `/face_recognition/uploads/${filename}`; 
 
 
     } catch (error) {
