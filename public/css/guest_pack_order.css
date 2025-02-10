@@ -1,7 +1,7 @@
 /* 전체 페이지 스타일 */
 body {
     font-family: 'Baloo 2', cursive;
-    background: linear-gradient(-45deg, #87CEEB, #4682B4); /* 하늘색 계열 */
+    background: linear-gradient(-45deg, #87CEEB, #4682B4, #3864e9); /* 하늘색 계열 */
     background-size: 400% 400%;
     animation: waveBg 4s infinite alternate ease-in-out;
     display: flex;
