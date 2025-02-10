@@ -27,7 +27,11 @@ canvas {
 .container {
     text-align: center;
     color: #fff;
-    animation: fadeIn 1s ease-in-out;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* 중앙 정렬 */
+    z-index: 2;
 }
 
 /* 제목 스타일 */
@@ -180,8 +184,19 @@ button:hover {
     to { opacity: 1; transform: translateY(0); }
 }
 
+
+
+
+/* 배경 애니메이션 */
 @keyframes waveBg {
-    0% { background-position: 0% 50%; }
-    100% { background-position: 100% 50%; }
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 50% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
 }
 
