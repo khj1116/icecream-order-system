@@ -3,18 +3,11 @@ document.addEventListener("DOMContentLoaded", () => {
     
 
     if (!orderForm) {
-        console.error("❌ 'orderForm' 요소를 찾을 수 없습니다. HTML을 확인하세요.");
-        return; // 🔴 `orderForm`이 없으면 실행 중단
+        console.error("'orderForm' 요소를 찾을 수 없습니다. HTML을 확인하세요.");
+        return; //  `orderForm`이 없으면 실행 중단
     }
 
     const message = document.getElementById("message");
-
-    // // 브라우저 뒤로가기 시 기본값 자동 제출 방지
-    // if (window.performance && window.performance.navigation.type === 2) {
-    //     console.log("뒤로가기 감지됨 - 자동 제출 방지");
-    //     sessionStorage.removeItem("orderSubmitted"); // 중복 주문 방지
-    //     window.history.replaceState({}, document.title, window.location.pathname);
-    // }
 
 
 
@@ -22,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let socket;
     if (typeof io !== "undefined") {
         socket = io('http://localhost:5000/');
-        console.log("✅ Socket.IO 연결 성공");
+        console.log("Socket.IO 연결 성공");
     } else {
         console.error("Socket.IO가 로드되지 않았습니다. HTML에 `<script src='https://cdn.socket.io/4.0.1/socket.io.min.js'></script>` 추가하세요.");
         return; // ⚠️ Socket.IO가 없으면 실행 중단
@@ -53,30 +46,40 @@ document.addEventListener("DOMContentLoaded", () => {
                 credentials: "include"
             });
     
-            console.log("📩 서버 응답 상태:", response.status);
+            console.log("서버 응답 상태:", response.status);
     
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error("❌ 서버 응답 오류:", errorText);
-                message.textContent = `❌ 주문 접수 실패: ${errorText}`;
+                console.error("서버 응답 오류:", errorText);
+                message.textContent = `주문 접수 실패: ${errorText}`;
                 return;
             }
     
             const result = await response.json();
-            console.log("✅ 주문 성공:", result);
-            message.textContent = "✅ 주문이 성공적으로 접수되었습니다!";
+            console.log("주문 성공:", result);
+            message.textContent = result.message || "주문이 성공적으로 접수되었습니다!";
     
-            // ✅ 주문 성공 후에만 `orderSubmitted`를 `true`로 설정
+            // 주문 성공 후에만 `orderSubmitted`를 `true`로 설정
             sessionStorage.setItem("orderSubmitted", "true");
+
+
+
     
-            orderForm.reset();
-    
-            // // ✅ 주문 성공 시 실시간 업데이트 요청
-            // socket.emit("new_order", order);
+            // `orderForm`이 존재하고, <form> 요소일 경우에만 reset 실행
+            if (orderForm && typeof orderForm.reset === "function") {
+                orderForm.reset();
+            } else {
+                console.warn("orderForm이 <form> 요소가 아니거나 reset() 메서드가 없습니다.");
+
+                // 개별 필드 초기화
+                document.getElementById("flavor").value = "";
+                document.getElementById("perform").value = "";
+                document.getElementById("topping").value = "";
+            }
     
         } catch (error) {
-            console.error("🚨 주문 요청 중 오류 발생:", error);
-            message.textContent = "❌ 서버와 연결할 수 없습니다.";
+            console.error("주문 요청 중 오류 발생:", error);
+            message.textContent = "서버와 연결할 수 없습니다.";
         }
     });
 
@@ -93,5 +96,71 @@ document.addEventListener("DOMContentLoaded", () => {
         sessionStorage.removeItem("orderSubmitted");
     });
 });
+///////////////////언어변경/////////////////////////////////
+const languageButton = document.getElementById('languageButton');
+        const translations = {
+            en: {
+                "guest-order": "Pick-up Order Page",
+                "flavor-label": "Choose Flavor:",
+                "perform-label": "Choose Performance:",
+                "topping-label": "Choose Topping:",
+                "submit": "Place Order",
+                "reset": "re-choice",
+                "languageButton": "한국어"
+            },
+            ko: {
+                "welcome-text": "어서오세요! 아이스크림 로봇 Aris입니다!",
+                "flavor-label": "맛 선택:",
+                "perform-label": "퍼포먼스 선택:",
+                "topping-label": "토핑 선택:",
+                "submit": "주문하기",
+                "reset": "취소",
+                "languageButton": "English"
 
-/*커밋*/
+            }
+        };
+
+        let currentLanguage = 'ko';
+
+        const updateLanguage = () => {
+            const texts = translations[currentLanguage];
+            for (const id in texts) {
+                const element = document.getElementById(id);
+                if (element) element.textContent = texts[id];
+            }
+
+            // Update options
+            document.querySelectorAll('option').forEach(option => {
+                const text = option.getAttribute(`data-${currentLanguage}`);
+                if (text) option.textContent = text;
+            });
+        };
+
+
+        languageButton.addEventListener('click', () => {
+            currentLanguage = currentLanguage === 'ko' ? 'en' : 'ko';
+            updateLanguage();
+
+        });
+
+        updateLanguage();
+///////////////애니메이션///////////////////////////////////////////
+document.addEventListener("DOMContentLoaded", () => {
+    const orderButton = document.querySelector("#submit");
+
+    orderButton.addEventListener("click", (event) => {
+        // 아이스크림 이모지를 생성
+        const icecream = document.createElement("div");
+        icecream.textContent = "🍦";
+        icecream.classList.add("icecream-fall");
+
+         // 버튼 내부에서 떨어지도록 설정
+        orderButton.appendChild(icecream);
+
+        // 애니메이션 후 요소 제거
+        setTimeout(() => {
+            icecream.remove();
+        }, 1000); // 애니메이션 시간 후 삭제
+    });
+});
+

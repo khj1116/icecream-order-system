@@ -110,7 +110,7 @@ app.post('/order', async(req, res) => {
 
          
             
-            
+            console.log("주문 처리 완료! 응답 반홪 중...");
             return res.status(200).json({ status: 'success', message: '주문이 성공적으로 처리되었습니다.' });
     
         } catch (error) {

@@ -8,38 +8,46 @@
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <script src="/js/guest_pack_order.js" defer></script>
     <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+
 
 </head>
 <body>
+    <!-- 캔버스 추가-->
+    <canvas id="backgroundCanvas"></canvas>
+    <div class="moving-background"></div>
     <div class="container">
-        <h1>포장 주문 페이지</h1> <!-- 회원 이름 표시 없음 -->
+        <h1 id="guest-order">포장 주문 페이지</h1> <!-- 회원 이름 표시 없음 -->
         <form id="orderForm">
-            <label for="flavor">맛 선택:</label>
+            <label id="flavor-label" for="flavor">맛 선택:</label>
             <select id="flavor" required>
-                <option value="blueberry">블루베리</option>
-                <option value="vanilla">바닐라</option>
-                <option value="strawberry">딸기</option>
+                <option value="blueberry"data-en="Blueberry" data-ko="블루베리">블루베리</option>
+                <option value="vanilla" data-en="Vanilla" data-ko="바닐라">바닐라</option>
+                <option value="strawberry" data-en="Strawberry" data-ko="딸기">딸기</option>
             </select>
 
-            <label for="perform">퍼포먼스 선택:</label>
+            <label id="perform-label" for="perform">퍼포먼스 선택:</label>
             <select id="perform" required>
-                <option value="Hand Heart">손 하트</option>
-                <option value="Bear ear">곰돌이 귀</option>
-                <option value="ET">ET</option>
+                <option value="Hand Heart" data-en="Hand Heart" data-ko="손 하트">손 하트</option>
+                <option value="Bear ear" data-en="Bear ear" data-ko="곰돌이 귀">곰돌이 귀</option>
+                <option value="ET" data-en="ET" data-ko="ET">ET</option>
             </select>
 
-            <label for="topping">토핑 선택:</label>
+            <label id="topping-label" for="topping">토핑 선택:</label>
             <select id="topping" required>
-                <option value="joripong">조리퐁</option>
-                <option value="cocoball">코코볼</option>
-                <option value="sunflower_seed">해바라기씨</option>
+                <option value="joripong" data-en="Joripong" data-ko="조리퐁">조리퐁</option>
+                <option value="cocoball" data-en="Cocoball" data-ko="코코볼">코코볼</option>
+                <option value="sunflower_seed" data-en="Sunflower seed" data-ko="해바라기씨">해바라기씨</option>
             </select>
 
-            <button type="submit">주문하기</button>
-            <button type="reset">취소</button>
+            <button id="submit" type="submit">주문하기</button>
+            <button id="reset" type="reset">취소</button>
            
         </form>
         <div id="message"></div>
+
+        <!--언어 변경 버튼-->
+        <button class="language-button" id="languageButton">English</button>
     </div>
 
     

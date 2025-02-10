@@ -7,7 +7,6 @@ const languageButton = document.getElementById('languageButton');
                 "topping-label": "Choose Topping:",
                 "submit-button": "Place Order",
                 "reset-button": "re-choice",
-                "registerButton": "Register Loyal Customer",
                 "languageButton": "한국어"
             },
             ko: {
@@ -17,7 +16,6 @@ const languageButton = document.getElementById('languageButton');
                 "topping-label": "토핑 선택:",
                 "submit-button": "주문하기",
                 "reset-button": "취소",
-                "registerButton": "단골 손님 등록",
                 "languageButton": "English"
 
             }
