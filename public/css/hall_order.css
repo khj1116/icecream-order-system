@@ -4,7 +4,9 @@ body {
     font-family: 'Baloo 2', cursive; 
     margin: 0;
     padding: 0;
-    background-color: rgba(255, 230, 240, 1);
+    background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #fad0c4, #fbc2eb);
+    background-size: 400% 400%;
+    animation: waveBg 4s infinite alternate ease-in-out;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -53,24 +55,75 @@ select, button, input[type="radio"] {
     font-size: 16px;
 }
 button {
-    background-color: #007bff;
+    background-color: #ff4081;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 15px 30px;
+    border-radius: 10px;
     color: #fff;
     cursor: pointer;
+    border: none;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out;
 }
 button:hover {
-    background-color: #0056b3;
+    background-color: #ff4081;
+    transform: scale(1.05);
 }
 .success-message {
     text-align: center;
     color: green;
     margin-top: 10px;
 }
-.register-button {
-    background-color: #28a766;
+
+.error-message {
+    color: red;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 10px;
+    transition: opacity 0.3s ease-in-out;
 }
-.register-button:hover {
-    background-color: #218838;
+
+
+
+
+#submit-button {
+    background-color: #ff4081;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 15px 30px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out;
 }
+
+#submit-button:hover {
+    transform: scale(1.05);
+}
+
+/* 아이스크림이 버튼에서 떨어지는 효과 */
+.icecream-fall {
+    position: absolute;
+    left: 50%;
+    top: 10%;
+    transform: translateX(-50%);
+    font-size: 25px;
+    opacity: 1;
+    pointer-events: none; /* 클릭 방해 방지 */
+    animation: fallIcecream 1s ease-in-out forwards;
+}
+
+
+
+
+
+
 .language-button {
     background-color: #ff9933;
 }
@@ -79,4 +132,26 @@ button:hover {
     background-color: #cc6600;
 }
 
-/*커밋*/
+@keyframes waveBg {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+/* 아이스크림이 아래로 떨어지는 애니메이션 */
+@keyframes fallIcecream {
+    0% {
+        top: -30px;
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+    }
+    50% {
+        top: 40%;
+        opacity: 0.8;
+        transform: translateX(-50%) rotate(-10deg) scale(1.2);
+    }
+    100% {
+        top: 100%;
+        opacity: 0;
+        transform: translateX(-50%) rotate(20deg) scale(1);
+    }
+}
