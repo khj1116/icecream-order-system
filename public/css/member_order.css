@@ -1,13 +1,31 @@
 /*전체 페이지 스타일 */
 body {
     font-family: 'Baloo 2', cursive;
-    background: linear-gradient(135deg, #FFD700, #FF69B4);
+    background: linear-gradient(45deg,#e6ab09, #FFD700, #FF69B4);
+    background-size: 400% 400%;
+    animation: waveBg 6s infinite alternate ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
     color: #fff;
     text-align: center;
     margin: 0;
     padding: 0;
     height: 100vh;
+    position: relative;
 }
+
+/* 캔버스 스타일 */
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /*컨텐츠 뒤에 배치*/
+}
+
 
 .container {
     width: 90%;
@@ -24,28 +42,93 @@ h1 {
     margin-bottom: 20px;
 }
 
+label {
+    font-weight: bold;
+    display: block;
+    margin: 10px 0 5px;
+}
+
 form {
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
-select, button {
+select, button, input[type="radio"] {
+    font-family: 'Baloo 2', cursive;
+    width: 100%;
     font-size: 18px;
     padding: 10px;
+    margin-bottom: 15px;
     border-radius: 5px;
-    border: none;
+    border: 1px solid #ccc;
 }
 
 button {
     background-color: #FF69B4;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 15px 30px;
+    border-radius: 10px;
+    border: none;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out;
     color: white;
     cursor: pointer;
 }
 
 button:hover {
     background-color: #FF1493;
+    transform: scale(1.05);
 }
+
+.success-message {
+    text-align: center;
+    color: green;
+    margin-top: 10px;
+}
+
+.error-message {
+    color: red;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 10px;
+    transition: opacity 0.3s ease-in-out;
+}
+
+#submit-button {
+    background-color: #ff69b4;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 15px 30px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease-in-out;
+}
+
+#submit-button:hover {
+    background-color: #FF1493;
+    transform: scale(1.05);
+}
+
+/* 아이스크림이 버튼에서 떨어지는 효과 */
+.icecream-fall {
+    position: absolute;
+    left: 50%;
+    top: 10%;
+    transform: translateX(-50%);
+    font-size: 25px;
+    opacity: 1;
+    pointer-events: none; /* 클릭 방해 방지 */
+    animation: fallIcecream 1s ease-in-out forwards;
+}
+
 
 
 .recommendation-box {
@@ -72,5 +155,30 @@ button:hover {
 .recommendation-box li:last-child {
     border-bottom: none;
 }
+
+@keyframes waveBg {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+/* 아이스크림이 아래로 떨어지는 애니메이션 */
+@keyframes fallIcecream {
+    0% {
+        top: -30px;
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+    }
+    50% {
+        top: 40%;
+        opacity: 0.8;
+        transform: translateX(-50%) rotate(-10deg) scale(1.2);
+    }
+    100% {
+        top: 100%;
+        opacity: 0;
+        transform: translateX(-50%) rotate(20deg) scale(1);
+    }
+}
+
 
 /*커밋*/
