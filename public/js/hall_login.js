@@ -155,8 +155,98 @@ document.addEventListener("DOMContentLoaded", () => {
     drawWaves();
 });
 ////////////////////////////////////////////////////////////////////////////
+/////////////////페이지 편의 기능////////////////////////////////////////////////////
+document.addEventListener("DOMContentLoaded", () => {
+    const languageButton = document.getElementById("toggle-language");
+    const fontButton = document.getElementById("toggle_font");
+    const container = document.querySelector(".container");  //큰 글씨 적용할 대상
+
+    // 언어 변환을 위한 텍스트 매핑
+    const translations = {
+        ko: {
+            title: "🍦 매장 로그인 🤖",
+            subtitle: "맛있는 소프트 아이스크림을 즐기세요!",
+            "login-heading": "로그인",
+            "box_login": "로그인",
+            "username-label": "아이디:",
+            "password-label": "비밀번호:",
+            "login-button": "로그인",
+            "faceLoginButton": "👤 얼굴 인식 로그인",
+            "client_registration": "회원가입",
+            "guestOrderButton": "비회원 주문",
+            "toggle-language": "English",
+            "toggle_font": "큰 글씨",
+            "userid-placeholder": "아이디를 입력하세요",
+            "password-placeholder": "비밀번호를 입력하세요"
+
+        },
+        en: {
+            title: "🍦 Store Login 🤖",
+            subtitle: "Enjoy delicious soft ice cream flavors!",
+            "login-heading": "Login",
+            "box_login": "LOGIN",
+            "username-label": "UserID:",
+            "password-label": "Password:",
+            "login-button": "Login",
+            "faceLoginButton": "👤 Face Login",
+            "client_registration": "Sign Up",
+            "guestOrderButton": "Guest Order",
+            "toggle-language": "한국어",
+            "toggle_font": "Large Font",
+            "userid-placeholder": "Enter your ID",
+            "password-placeholder": "Enter your password"
+        }
+    };
+
+    let currentLanguage = "ko"; // 기본 한국어 모드
+    let largeFontMode = false;  // 큰 글씨 모드 꺼짐
+
+    // 언어 변경 함수
+    const updateLanguage = () => {
+        const texts = translations[currentLanguage];
+        //일반 텍스트 변경(h1, label...)
+        for (const id in texts) {
+            const element = document.getElementById(id);
+            if (element) element.textContent = texts[id];
+        }
+        //input field의 placeholder 변경
+        document.getElementById("userid").setAttribute("placeholder", texts["userid-placeholder"]);
+        document.getElementById("password").setAttribute("placeholder", texts["password-placeholder"]);
+
+    };
+
+    // 언어 변경 버튼 클릭 이벤트
+    if (languageButton) {
+        languageButton.addEventListener("click", () => {
+            currentLanguage = currentLanguage === "ko" ? "en" : "ko";
+            updateLanguage();
+        });
+    }
+
+    // 큰 글씨 모드 토글
+    if(fontButton) {
+        fontButton.addEventListener("click", () => {
+            largeFontMode = !largeFontMode;
+            document.body.classList.toggle("large-font", largeFontMode);
+
+            // 큰 글씨 모드 적용 시 자동으로 최상단으로 스크롤 이동
+            if (largeFontMode) {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
 
 
+
+            //버튼 텍스트 변경
+            fontButton.textContent = largeFontMode ? translations[currentLanguage]["toggle_font"] + " OFF" : translations[currentLanguage]["toggle_font"];
+
+        });
+
+    }
+    
+
+    updateLanguage(); // 초기 언어 설정 적용
+});
+/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
     

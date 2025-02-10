@@ -1,34 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hall Order Login | Ice Cream Robot</title>
+    <title>매장 로그인 | Ice Cream Robot</title>
     <link rel="stylesheet" href="/css/hall_login.css">
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <script src="/js/hall_login.js" defer></script>
 </head>
 <body>
     <canvas id="backgroundCanvas"></canvas>
-    <div class="container">
-        <h1>🍦 Welcome to Ice Cream Robot 🤖</h1>
-        <p class="subtitle">Enjoy delicious soft ice cream flavors!</p>
 
+    <div class="container">
+        <h1 id="title">🍦매장 로그인 🤖</h1>
+        <p id="subtitle" class="subtitle">맛있는 소프트 아이스크림을 즐기세요!</p>
+                                                    
         <div class="login-box">
-            <h2>로그인</h2>
+            <h2 id="box_login">로그인</h2>
             <form id="loginForm">
                 
-                <label for="user_id">아이디:</label>
-                <input type="text" id="userid" name="user_id" placeholder="Enter your ID">
+                <label id="username-label" for="user_id">아이디:</label>
+                <input type="text" id="userid" name="user_id" placeholder="아이디를 입력하세요">
 
                 <br>
     
-                <label for="password">비밀번호:</label>
-                <input type="password" id="password" name="password" placeholder="Enter your password">
+                <label id="password-label" for="password">비밀번호:</label>
+                <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요">
 
                 <br>
     
-                <button type="submit">Login</button>
+                <button id="login-button" type="submit">로그인</button>
                 
             </form>
 
@@ -39,6 +40,9 @@
             <button id="guestOrderButton" type="button">비회원 주문</button>
     
             <p id="message" class="error-message"></p>
+
+            <button id="toggle-language">English</button>
+            <button id="toggle_font">큰 글씨</button>
 
         </div>
     </div>

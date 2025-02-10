@@ -140,6 +140,33 @@ button:hover {
     transform: scale(1.05);
 }
 
+/* 큰 글씨 모드 시 스크롤 가능 */
+.large-font {
+    overflow-y: auto !important;  /* 세로 스크롤 활성화 */
+    height: auto !important; /* 화면 크기 제한 해제 */
+    min-height: 100vh; /* 최소 높이 설정 */
+}
+
+/* 큰 글씨 모드 */
+.large-font h1,
+.large-font h2,
+.large-font p,
+.large-font label,
+.large-font button,
+.large-font input,
+.large-font select {
+    font-size: 1.8em !important;
+}
+
+.large-font .login-box {
+    padding: 40px; /* 로그인 박스 크기도 조정 */
+    width: 360px;
+}
+
+.large-font input {
+    font-size: 1.8em !important;
+}
+
 /* 에러 메시지 */
 .error-message {
     color: red;
@@ -158,4 +185,3 @@ button:hover {
     100% { background-position: 100% 50%; }
 }
 
-/*커밋*/
