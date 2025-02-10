@@ -47,94 +47,28 @@ const languageButton = document.getElementById('languageButton');
         });
 
         updateLanguage();
-        
-      
-        //동적 배경 코드
-        const canvas = document.getElementById('backgroundCanvas');
-        const ctx = canvas.getContext('2d');
+/////////////////////////////////////애니메이션//////////////////////////////////
+    document.addEventListener("DOMContentLoaded", () => {
+        const orderButton = document.querySelector("#submit-button");
 
-        //캔버스 크기 설정
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        orderButton.addEventListener("click", (event) => {
+            // 아이스크림 이모지를 생성
+            const icecream = document.createElement("div");
+            icecream.textContent = "🍦";
+            icecream.classList.add("icecream-fall");
 
-        //파티클 배열
-        const particles = [];
+            // 버튼 내부에서 떨어지도록 설정
+            orderButton.appendChild(icecream);
 
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.scale = Math.random() * 2 + 1;  //scale 초기화 추가
-                this.dx = (Math.random() - 0.5) * 2;
-                this.dy = (Math.random() - 0.5) * 2;
-            }
-
-            draw() {
-                const spikes = 5; //별의 꼭짓점 수
-                const outerRadius = 5 * this.scale;
-                const innerRadius = outerRadius / 2.5;
-                const step = Math.PI / spikes;
-
-                ctx.beginPath();
-                let rotation = Math.PI / 2 * 3; // 시작 회전 각도
-                let x = this.x;
-                let y = this.y;
-
-                ctx.moveTo(this.x, this.y - outerRadius);
-
-                for (let i = 0; i < spikes; i++) {
-                    x = this.x + Math.cos(rotation) * outerRadius;
-                    y = this.y + Math.sin(rotation) * outerRadius;
-                    ctx.lineTo(x, y);
-                    rotation += step;
-
-                    x = this.x + Math.cos(rotation) * innerRadius;
-                    y = this.y + Math.sin(rotation) * innerRadius;
-                    ctx.lineTo(x, y);
-                    rotation += step;
-                }
-
-                ctx.lineTo(this.x, this.y - outerRadius);
-                ctx.closePath();
-                ctx.fillStyle = 'rgba(255, 0, 127, 0.8)';
-                ctx.fill();
-                }
-
-            update() {
-                this.x += this.dx;
-                this.y += this.dy;
-
-                //경계에 부딪히면 방향 반전
-                if (this.x < 0 || this.x > canvas.width) this.dx *= -1;
-                if (this.y < 0 || this.y > canvas.height) this.dy *= -1;
-                this.draw();
-            }
-        }
-
-        // 파티클 생성
-        for (let i = 0; i < 150; i++) {
-            particles.push(new Particle());
-        }
-
-        // 애니메이션 루프
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(particle => particle.update());
-            requestAnimationFrame(animate);
-        }
-
-        animate();
-
-        // 창 크기 변경 시 캔버스 크기 업데이트
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-
-            particles.length = 0;  //기존 배열 초기화
-            for (let i = 0; i < 150; i++) {
-                particles.push(new Particle());   //새로운 파티클 추가
-            }
+            // 애니메이션 후 요소 제거
+            setTimeout(() => {
+                icecream.remove();
+            }, 1000); // 애니메이션 시간 후 삭제
         });
+    });  
+        
+
+        
 ////////////////////////////////////////////////////////////////////////////
     document.addEventListener("DOMContentLoaded", () => {
 
@@ -375,7 +309,39 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-/*커밋*/
+//취소버튼
+document.addEventListener("DOMContentLoaded", () => {
+    const orderForm = document.getElementById('orderForm');
+    const message = document.getElementById('message');
+    const resetButton = document.getElementById('reset-button');
+    let currentLanguage = 'ko';
+
+    const translations = {
+        en: {
+            resetMessage: "Please select your menu again!"
+        },
+        ko: {
+            resetMessage: "다시 메뉴를 선택해주세요!"
+        }
+    };
+
+    // 언어 변경 버튼 클릭 시 상태 업데이트
+    document.getElementById('languageButton').addEventListener("click", () => {
+        currentLanguage = currentLanguage === 'ko' ? 'en' : 'ko';
+    });
+
+    // 주문 취소 버튼 클릭 시 메시지 표시
+    resetButton.addEventListener("click", () => {
+        message.textContent = translations[currentLanguage].resetMessage;
+        message.classList.add("error-message");
+
+        // 1초 후 메시지 사라지게 설정 (선택 사항)
+        setTimeout(() => {
+            message.textContent = "";
+            message.classList.remove("error-message");
+        }, 1000);
+    });
+});
 
         
    
