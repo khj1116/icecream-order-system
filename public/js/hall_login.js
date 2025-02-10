@@ -108,6 +108,54 @@ if (guestOrderButton) {
             });
         }
     });
+////////////////////////배경화면///////////////////////////////
+document.addEventListener("DOMContentLoaded", () => {
+    const canvas = document.getElementById("backgroundCanvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const waves = [];
+    const numWaves = 5; 
+
+    for (let i = 0; i < numWaves; i++) {
+        waves.push({
+            y: Math.random() * canvas.height,
+            amplitude: Math.random() * 40 + 20, 
+            wavelength: Math.random() * 80 + 40, 
+            speed: Math.random() * 2 + 1 
+        });
+    }
+
+    function drawWaves() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
+        ctx.beginPath();
+        
+        for (let i = 0; i < numWaves; i++) {
+            const wave = waves[i];
+            ctx.moveTo(0, wave.y);
+
+            for (let x = 0; x < canvas.width; x++) {
+                const y = wave.y + Math.sin((x + wave.speed * Date.now() * 0.002) / wave.wavelength) * wave.amplitude;
+                ctx.lineTo(x, y);
+            }
+        }
+
+        ctx.lineTo(canvas.width, canvas.height);
+        ctx.lineTo(0, canvas.height);
+        ctx.closePath();
+        ctx.fill();
+
+        requestAnimationFrame(drawWaves);
+    }
+
+    drawWaves();
+});
+////////////////////////////////////////////////////////////////////////////
+
 
 
 
