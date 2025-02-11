@@ -92,27 +92,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //////////////////////////////////////////////////////////////////////////////////////////
 document.addEventListener("DOMContentLoaded", () => {
+
+    let currentLanguage = sessionStorage.getItem("language") || "ko";
     //회원 이름 가져오기
     const username = sessionStorage.getItem("username");  
     const welcomeText = document.getElementById("welcome-text");  //HTML 요소 가져오기
 
     if (welcomeText) {  // 요소가 존재하는 경우에만 실행
         if (username && username !== "undefined" && username !== "null") {
-            welcomeText.textContent = `${username} 회원님! 안녕하세요.`;  // 템플릿 리터럴 사용
+            welcomeText.textContent = currentLanguage === "ko"
+                ? `${username} 회원님! 안녕하세요.`
+                : `Hello, ${username}! Welcome!`;
+            
             console.log("회원 이름 표시:", username); // 디버깅 로그
         } else {
             welcomeText.textContent = "환영합니다! 회원 전용 주문 페이지입니다.";
             console.error("SessionStorage에 저장된 username이 없습니다.");
         }
     } else {
-        console.error("❌ 'welcome-text' 요소를 찾을 수 없습니다. HTML을 확인하세요.");
+        console.error("'welcome-text' 요소를 찾을 수 없습니다. HTML을 확인하세요.");
     }
 
     const orderForm = document.getElementById("orderForm");
     
 
     if (!orderForm) {
-        console.error("❌ 'orderForm' 요소를 찾을 수 없습니다.");
+        console.error("'orderForm' 요소를 찾을 수 없습니다.");
         return;
     }
 

@@ -47,6 +47,13 @@ label {
     display: block;
     margin: 10px 0 5px;
 }
+
+#flavor-label, #perform-label, #topping-label {
+    font-size: 1.2em;  /* 글씨 크기 증가 */
+    font-weight: bold;  /* 굵게 설정 */
+    margin-bottom: 10px;
+}
+
 select, button, input[type="radio"] {
     font-family: 'Baloo 2', cursive;
     width: 100%;

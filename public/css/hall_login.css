@@ -7,7 +7,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(-45deg, #88ff00, #fff069);
+    background: linear-gradient(-45deg, #9900fff3, #eb7aaf);
     background-size: 400% 400%;
     position: relative;
     overflow: hidden;
@@ -89,7 +89,7 @@ h1 {
     width: 95%; /* 입력 필드를 부모 크기에 맞게 조정 */
     padding: 12px;
     margin-bottom: 15px;
-    border: 2px solid #69ffb9; /* 분홍색 테두리 */
+    border: 2px solid #9900fff3; /* 분홍색 테두리 */
     border-radius: 8px;
     font-size: 16px;
     color: #333; /* 입력한 글씨도 잘 보이도록 설정 */
@@ -103,8 +103,8 @@ h1 {
     width: 100%;
     padding: 12px;
     border: none;
-    background: #60ff40;
-    color: #031aecb9;
+    background: #9900fff3;
+    color: #fff;
     font-size: 18px;
     font-weight: bold;
     border-radius: 8px;
@@ -130,7 +130,7 @@ button {
     width: 100%;
     padding: 12px;
     border: none;
-    background: #4effb9;
+    background: #9900fff3;
     color: white;
     font-size: 18px;
     font-weight: bold;
@@ -140,7 +140,7 @@ button {
 }
 
 button:hover {
-    background: #ecde19;
+    background: #eb7aaf;
     transform: scale(1.05);
 }
 

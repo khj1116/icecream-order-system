@@ -8,7 +8,7 @@ body {
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    color: #fff;
+    color: #000000;
     text-align: center;
     margin: 0;
     padding: 0;
@@ -47,6 +47,13 @@ label {
     display: block;
     margin: 10px 0 5px;
 }
+
+#flavor-label, #perform-label, #topping-label {
+    font-size: 1.2em;  /* 글씨 크기 증가 */
+    font-weight: bold;  /* 굵게 설정 */
+    margin-bottom: 10px;
+}
+
 
 form {
     display: flex;
@@ -116,7 +123,7 @@ button:hover {
     background-color: #FF1493;
     transform: scale(1.05);
 }
-/* 큰 글씨 모드 */
+
 .language-button {
     background-color: #ff9933;
 }
@@ -130,50 +137,6 @@ button:hover {
     height: auto !important; /* 화면 크기 제한 해제 */
     min-height: 100vh; /* 최소 높이 설정 */
 }
-
-/* 큰 글씨 모드 */
-.large-font h1,
-.large-font p,
-.large-font label,
-.large-font button,
-.large-font input,
-.large-font select 
-.large-font .recommendation-box h3,
-.large-font .recommendation-box li {
-    font-size: 1.8em !important;
-}
-.large-font #user-greeting {
-    font-size: 1.8em !important;
-}
-.large-font .container {
-    width: 80%; /* 컨테이너 크기 확대 */
-    max-width: 800px; /* 너무 커지지 않도록 최대 크기 설정 */
-    padding: 30px; /* 내부 패딩 증가 */
-}
-
-/* 버튼 크기 조정 */
-.large-font button {
-    font-size: 1.5em !important;
-    padding: 20px 40px;
-}
-
-/* 선택 박스 크기 조정 */
-.large-font select {
-    font-size: 1.5em !important;
-}
-
-
-.large-font .orderForm {
-    /* padding: 40px; 로그인 박스 크기도 조정 */
-    width: 100%;
-}
-
-.large-font input {
-    font-size: 1.8em !important;
-}
-
-
-
 
 
 /* 아이스크림이 버튼에서 떨어지는 효과 */

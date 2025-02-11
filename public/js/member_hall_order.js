@@ -53,6 +53,18 @@ document.addEventListener("DOMContentLoaded", () => {
             if (text) option.textContent = text;
         });
 
+        // 로그인한 회원 이름도 업데이트
+        const usernameDisplay = document.getElementById("user-greeting");
+        const username = sessionStorage.getItem("username");
+
+        if (usernameDisplay && username) {
+            usernameDisplay.textContent = currentLanguage === "ko"
+                ? `${username} 회원님! 안녕하세요.`
+                : `Hello, ${username}! Welcome!`;
+        }
+
+
+
         // 큰 글씨 버튼 텍스트 업데이트
         if (fontButton) {
             fontButton.textContent = largeFontMode
@@ -190,13 +202,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.log("sessionStorage.getItem('user_id'):", sessionStorage.getItem("user_id"));
         
         //회원 이름 가져오기
-         
+        let currentLanguage = sessionStorage.getItem("language") || "ko";
         const usernameDisplay = document.getElementById("user-greeting");  //HTML 요소 가져오기
 
         if (usernameDisplay) {  // 요소가 존재하는 경우에만 실행
             const username = sessionStorage.getItem("username"); 
             if (username && username !== "undefined" && username !== "null") {
-                usernameDisplay.textContent = `${username} 님! 안녕하세요.`;  // 템플릿 리터럴 사용
+                usernameDisplay.textContent = currentLanguage === "ko"
+                    ? `${username} 회원님! 안녕하세요.`
+                    : `Hello, ${username}! Welcome!`;
+                  
                 console.log("회원 이름 표시:", username); // 디버깅 로그
             } else {
                 usernameDisplay.textContent = "환영합니다! 회원 전용 주문 페이지입니다.";
@@ -210,7 +225,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         
     
         if (!orderForm) {
-            console.error("❌ 'orderForm' 요소를 찾을 수 없습니다.");
+            console.error("'orderForm' 요소를 찾을 수 없습니다.");
             return;
         }
     
@@ -222,12 +237,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             socket = io('http://localhost:5000/');
             console.log(" Socket.IO 연결 성공");
 
-            // 🔴 기존에 등록된 이벤트가 있다면 제거 (이중 등록 방지)
+            // 기존에 등록된 이벤트가 있다면 제거 (이중 등록 방지)
             socket.off("update_orders");
 
-            // ✅ 주문 내역 실시간 업데이트 리스너 등록
+            // 주문 내역 실시간 업데이트 리스너 등록
             socket.on("update_orders", (orders) => {
-                console.log("🔄 실시간 주문 내역 업데이트 수신:", orders);
+                console.log("실시간 주문 내역 업데이트 수신:", orders);
                 updateOrderList(orders);
             });
 
