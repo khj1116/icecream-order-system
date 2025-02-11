@@ -1,82 +1,97 @@
-const languageButton = document.getElementById('languageButton');
-        const translations = {
-            en: {
-                "welcome-text": "Welcome! I am Aris, the Ice Cream Robot!",
-                "flavor-label": "Choose Flavor:",
-                "perform-label": "Choose Performance:",
-                "topping-label": "Choose Topping:",
-                "submit-button": "Place Order",
-                "reset-button": "re-choice",
-                "registerButton": "Register Loyal Customer",
-                "languageButton": "한국어"
-            },
-            ko: {
-                "welcome-text": "어서오세요! 아이스크림 로봇 Aris입니다!",
-                "flavor-label": "맛 선택:",
-                "perform-label": "퍼포먼스 선택:",
-                "topping-label": "토핑 선택:",
-                "submit-button": "주문하기",
-                "reset-button": "취소",
-                "registerButton": "단골 손님 등록",
-                "languageButton": "English"
 
-            }
-        };
 
-        let currentLanguage = 'ko';
-        letlargeFontMode = false; //큰 글씨 모드 꺼짐
 
-        const updateLanguage = () => {
-            const texts = translations[currentLanguage];
-            for (const id in texts) {
-                const element = document.getElementById(id);
-                if (element) element.textContent = texts[id];
-            }
+document.addEventListener("DOMContentLoaded", () => {
+    const languageButton = document.getElementById('languageButton');
+    const fontButton = document.getElementById('toggle_font');
 
-            // Update options
-            document.querySelectorAll('option').forEach(option => {
-                const text = option.getAttribute(`data-${currentLanguage}`);
-                if (text) option.textContent = text;
-            });
-        };
 
-        //언어 변경 클릭 이벤트
-        if (languageButton) {
-            languageButton.addEventListener('click', () => {
-                currentLanguage = currentLanguage === 'ko' ? 'en' : 'ko';
-                updateLanguage();
-    
-            });
+    let largeFontMode = sessionStorage.getItem("largeFontMode") === "true";
+    let currentLanguage = sessionStorage.getItem("lauguage") || "ko";
+
+    const translations = {
+        en: {
+            "welcome-text": "Welcome! I am Aris, the Ice Cream Robot!",
+            "flavor-label": "Choose Flavor:",
+            "perform-label": "Choose Performance:",
+            "topping-label": "Choose Topping:",
+            "submit-button": "Place Order",
+            "reset-button": "re-choice",
+            "registerButton": "Register Loyal Customer",
+            "languageButton": "한국어",
+            "toggle_font": "Large Font"
+
+        },
+        ko: {
+            "welcome-text": "어서오세요! 아이스크림 로봇 Aris입니다!",
+            "flavor-label": "맛 선택:",
+            "perform-label": "퍼포먼스 선택:",
+            "topping-label": "토핑 선택:",
+            "submit-button": "주문하기",
+            "reset-button": "취소",
+            "registerButton": "단골 손님 등록",
+            "languageButton": "English",
+            "toggle_font": "큰 글씨"
+
         }
-    document.addEventListener("DOMContentLoaded", () => {
-        const fontButton = document.getElementById('toggle_font');
-        let largeFontMode = sessionStorage.getItem("largeFontMode") === "true";
+    };
 
-        // 큰 글씨 모드 토글
-        if(fontButton) {
-            if(largeFontMode) {
-                document.body.classList.add("large-font");
-                fontButton.textContent = "큰 글씨 OFF";
-            } else {
-                fontButton.textContent = "큰 글씨";
-            }
+    //언어 업데이트 함수
+    const updateLanguage = () => {
+        const texts = translations[currentLanguage];
 
-            fontButton.addEventListener("click", () => {
-                largeFontMode = !largeFontMode;
-                document.body.classList.toggle("large-font", largeFontMode);
-                
-                // 큰 글씨 모드 적용 시 자동으로 최상단으로 스크롤 이동
-                if (largeFontMode) {
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                }
+        for (const id in texts) {
+            const element = document.getElementById(id);
+            if (element) element.textContent = texts[id];
+        }
 
-                //버튼 텍스트 변경
-                fontButton.textContent = largeFontMode ? "큰 글씨 OFF" : "큰 글씨";
-            });
-    } else {
-        console.error("'toggle_font' 버튼을 찾을 수 없습니다.");
+        // 큰 글씨 버튼 텍스트 업데이트
+        if (fontButton) {
+            fontButton.textContent = largeFontMode
+                ?`${texts["toggle_font"]} OFF`
+                : texts["toggle_font"];
+        }
+
+        // 세션 스토리지에 현재 언어 저장 (새로고침해도 유지)
+        sessionStorage.setItem("language", currentLanguage);
+    };
+
+    //언어 변경 버튼 클릭 이벤트
+    if (languageButton) {
+        languageButton.addEventListener('click', () => {
+            currentLanguage = currentLanguage === 'ko' ? 'en' : 'ko';
+            updateLanguage();
+        });
     }
+
+    //큰 글씨 모드 초기화 및 버튼 설정
+    if (fontButton) {
+        if (largeFontMode) {
+            document.body.classList.add("large-font");
+        }
+
+        fontButton.textContent = largeFontMode
+            ? `${translations[currentLanguage]["toggle_font"]} OFF`
+            : translations[currentLanguage]["toggle_font"];
+
+        // 큰 글씨 모드 버튼 클릭 이벤트
+        fontButton.addEventListener("click", () => {
+            largeFontMode = !largeFontMode;
+            document.body.classList.toggle("large-font", largeFontMode);
+            sessionStorage.setItem("largeFontMode", largeFontMode);
+
+            fontButton.textContent = largeFontMode
+                ? `${translations[currentLanguage]["toggle_font"]} OFF`
+                : translations[currentLanguage]["toggle_font"];
+        });
+    }
+
+    updateLanguage(); // 초기 언어 설정 반영
 });
+    
+
+        
+
 
 
 /////////////////////////////////////애니메이션//////////////////////////////////
