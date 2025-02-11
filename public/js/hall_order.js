@@ -1,50 +1,103 @@
-const languageButton = document.getElementById('languageButton');
-        const translations = {
-            en: {
-                "welcome-text": "Welcome! I am Aris, the Ice Cream Robot!",
-                "flavor-label": "Choose Flavor:",
-                "perform-label": "Choose Performance:",
-                "topping-label": "Choose Topping:",
-                "submit-button": "Place Order",
-                "reset-button": "re-choice",
-                "languageButton": "한국어"
-            },
-            ko: {
-                "welcome-text": "어서오세요! 아이스크림 로봇 Aris입니다!",
-                "flavor-label": "맛 선택:",
-                "perform-label": "퍼포먼스 선택:",
-                "topping-label": "토핑 선택:",
-                "submit-button": "주문하기",
-                "reset-button": "취소",
-                "languageButton": "English"
+document.addEventListener("DOMContentLoaded", () => {
+    const languageButton = document.getElementById('languageButton');
+    const fontButton = document.getElementById('toggle_font');
 
-            }
-        };
+    let largeFontMode = sessionStorage.getItem("largeFontMode") === "true";
+    let currentLanguage = sessionStorage.getItem("language") || 'ko';
 
-        let currentLanguage = 'ko';
+    const translations = {
+        en: {
+            "welcome-text": "Welcome! I am Aris, the Ice Cream Robot!",
+            "flavor-label": "Choose Flavor:",
+            "perform-label": "Choose Performance:",
+            "topping-label": "Choose Topping:",
+            "submit-button": "Place Order",
+            "reset-button": "re-choice",
+            "language-button": "한국어",
+            "toggle_font": "Large font"
 
-        const updateLanguage = () => {
-            const texts = translations[currentLanguage];
-            for (const id in texts) {
-                const element = document.getElementById(id);
-                if (element) element.textContent = texts[id];
-            }
-
-            // Update options
-            document.querySelectorAll('option').forEach(option => {
-                const text = option.getAttribute(`data-${currentLanguage}`);
-                if (text) option.textContent = text;
-            });
-        };
+        },
+        ko: {
+            "welcome-text": "어서오세요! 아이스크림 로봇 Aris입니다!",
+            "flavor-label": "맛 선택:",
+            "perform-label": "퍼포먼스 선택:",
+            "topping-label": "토핑 선택:",
+            "submit-button": "주문하기",
+            "reset-button": "취소",
+            "language-button": "English",
+            "toggle_font": "큰 글씨"
 
 
-        languageButton.addEventListener('click', () => {
-            currentLanguage = currentLanguage === 'ko' ? 'en' : 'ko';
-            updateLanguage();
+        }
+    };
 
+    //언어 업데이트 함수
+    const updateLanguage = () => {
+        const texts = translations[currentLanguage];
+        for (const id in texts) {
+            const element = document.getElementById(id);
+            if (element) element.textContent = texts[id];
+        }
+
+        // Update options
+        document.querySelectorAll('option').forEach(option => {
+            const text = option.getAttribute(`data-${currentLanguage}`);
+            if (text) option.textContent = text;
         });
 
-        updateLanguage();
+        //큰 글씨 버튼 텍스트 업데이트
+        if (fontButton) {
+            fontButton.textContent = largeFontMode
+            ? `${text["toggle_font"]} OFF`
+            : texts["toggle_font"];
+        }
+
+        //세션 스토리지에 현재 언어 저장(새로고침해도 유지)
+        sessionStorage.setItem("language", currentLanguage);
+    };
+
+    //언어 변경 버튼 클릭 이벤트
+    if (languageButton) {
+        languageButton.addEventListener('click', () => {
+            currentLanguage = currentLanguage === 'ko' ? 'en' : 'ko';
+            sessionStorage.setItem("language", currentLanguage);
+            updateLanguage();
+        });
+    }
+    //초기언어 적용
+    updateLanguage();
+
+    //큰 글씨 모드 초기화 및 버튼 설정
+    if (fontButton) {
+        if (largeFontMode) {
+            document.body.classList.add("large-font");
+            document.body.style.overflowY = "auto";
+        } else {
+            document.body.style.overflowY = "hidden";
+        }
+
+        // 큰 글씨 모드 버튼 클릭 이벤트
+        fontButton.addEventListener("click", () => {
+            largeFontMode = !largeFontMode;
+            document.body.classList.toggle("large-font", largeFontMode);
+            sessionStorage.setItem("largeFontMode", largeFontMode);
+
+            if (largeFontMode) {
+                document.body.style.overflowY = "auto";
+                fontButton.textContent = `${translations[currentLanguage]["toggle_font"]} OFF`;
+
+                setTimeout(() => {
+                    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" });
+                }, 200);
+            } else {
+                document.body.style.overflowY = "hidden";
+                fontButton.textContent = translations[currentLanguage]["toggle_font"];
+            }
+        });
+    }
+});
+
+    
 //////////////////////////////////////////////애니메이션/////////////////////////////////////////////////////////
         document.addEventListener("DOMContentLoaded", () => {
             const orderButton = document.querySelector("#submit-button");

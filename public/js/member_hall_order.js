@@ -28,7 +28,7 @@ const translations = {
 };
 
 let largeFontMode = sessionStorage.getItem("largeFontMode") === "true";
-let currentLanguage = sessionStorage.getItem("lauguage") || "ko";
+let currentLanguage = sessionStorage.getItem("language") || "ko";
 
 
 
