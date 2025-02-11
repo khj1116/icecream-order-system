@@ -24,6 +24,7 @@ const languageButton = document.getElementById('languageButton');
         };
 
         let currentLanguage = 'ko';
+        letlargeFontMode = false; //큰 글씨 모드 꺼짐
 
         const updateLanguage = () => {
             const texts = translations[currentLanguage];
@@ -39,14 +40,45 @@ const languageButton = document.getElementById('languageButton');
             });
         };
 
+        //언어 변경 클릭 이벤트
+        if (languageButton) {
+            languageButton.addEventListener('click', () => {
+                currentLanguage = currentLanguage === 'ko' ? 'en' : 'ko';
+                updateLanguage();
+    
+            });
+        }
+    document.addEventListener("DOMContentLoaded", () => {
+        const fontButton = document.getElementById('toggle_font');
+        let largeFontMode = sessionStorage.getItem("largeFontMode") === "true";
 
-        languageButton.addEventListener('click', () => {
-            currentLanguage = currentLanguage === 'ko' ? 'en' : 'ko';
-            updateLanguage();
+        // 큰 글씨 모드 토글
+        if(fontButton) {
+            if(largeFontMode) {
+                document.body.classList.add("large-font");
+                fontButton.textContent = "큰 글씨 OFF";
+            } else {
+                fontButton.textContent = "큰 글씨";
+            }
 
-        });
+            fontButton.addEventListener("click", () => {
+                largeFontMode = !largeFontMode;
+                document.body.classList.toggle("large-font", largeFontMode);
+                
+                // 큰 글씨 모드 적용 시 자동으로 최상단으로 스크롤 이동
+                if (largeFontMode) {
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                }
 
-        updateLanguage();
+                //버튼 텍스트 변경
+                fontButton.textContent = largeFontMode ? "큰 글씨 OFF" : "큰 글씨";
+            });
+    } else {
+        console.error("'toggle_font' 버튼을 찾을 수 없습니다.");
+    }
+});
+
+
 /////////////////////////////////////애니메이션//////////////////////////////////
     document.addEventListener("DOMContentLoaded", () => {
         const orderButton = document.querySelector("#submit-button");
@@ -78,7 +110,7 @@ const languageButton = document.getElementById('languageButton');
         
         //회원 이름 가져오기
          
-        const usernameDisplay = document.getElementById("username");  //HTML 요소 가져오기
+        const usernameDisplay = document.getElementById("user-greeting");  //HTML 요소 가져오기
 
         if (usernameDisplay) {  // 요소가 존재하는 경우에만 실행
             const username = sessionStorage.getItem("username"); 
