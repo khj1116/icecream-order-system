@@ -1,4 +1,97 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const languageButton = document.getElementById('languageButton');
+    let currentLanguage = sessionStorage.getItem("language") || "ko";
+
+    const translations = {
+        en: {
+            "welcome-text": "Welcome! I am Aris, the Ice Cream Robot!",
+            "flavor-label": "Choose Flavor:",
+            "perform-label": "Choose Performance:",
+            "topping-label": "Choose Topping:",
+            "submit-button": "Place Order",
+            "reset-button": "re-choice",
+            "languageButton": "한국어",
+            "recommend-title":"💡 Recommend Menu (Recent Orders)",
+            "no-orders": "No recent orders found."
+
+        },
+        ko: {
+            "welcome-text": "어서오세요! 아이스크림 로봇 Aris입니다!",
+            "flavor-label": "맛 선택:",
+            "perform-label": "퍼포먼스 선택:",
+            "topping-label": "토핑 선택:",
+            "submit-button": "주문하기",
+            "reset-button": "취소",
+            "languageButton": "English",
+            "recommend-title":"💡 추천 메뉴 (최근 주문)",
+            "no-orders": "최근 주문 내역이 없습니다."
+
+        }
+    };
+
+    //언어 업데이트 함수
+    const updateLanguage = () => {
+        const texts = translations[currentLanguage];
+
+        for (const id in texts) {
+            const element = document.getElementById(id);
+            if (element) element.textContent = texts[id];
+        }
+
+         // Update options
+         document.querySelectorAll('option').forEach(option => {
+            const text = option.getAttribute(`data-${currentLanguage}`);
+            if (text) option.textContent = text;
+        });
+
+
+        // 추천 메뉴 제목 변경
+        const recommendTitle = document.querySelector("#recommendations h3");
+        if (recommendTitle) recommendTitle.textContent = texts["recommend-title"];
+
+        // 추천 메뉴 없을 때 메시지 변경
+        const recommendBox = document.querySelector("#recommendations p");
+        if (recommendBox && recommendBox.textContent.trim() === translations[currentLanguage === "ko" ? "en" : "ko"]["no-orders"]) {
+            recommendBox.textContent = texts["no-orders"];
+        }
+
+        // 세션 스토리지에 현재 언어 저장 (새로고침해도 유지)
+        sessionStorage.setItem("language", currentLanguage);
+    };
+
+    //언어 변경 버튼 클릭 이벤트
+    if (languageButton) {
+        languageButton.addEventListener('click', () => {
+            currentLanguage = currentLanguage === 'ko' ? 'en' : 'ko';
+            updateLanguage();
+        });
+    }
+
+    //초기언어 적용
+    updateLanguage();
+});
+/////////////////////////////////////애니메이션//////////////////////////////////
+document.addEventListener("DOMContentLoaded", () => {
+    const orderButton = document.querySelector("#submit-button");
+
+    orderButton.addEventListener("click", (event) => {
+        // 아이스크림 이모지를 생성
+        const icecream = document.createElement("div");
+        icecream.textContent = "🍦";
+        icecream.classList.add("icecream-fall");
+
+        // 버튼 내부에서 떨어지도록 설정
+        orderButton.appendChild(icecream);
+
+        // 애니메이션 후 요소 제거
+        setTimeout(() => {
+            icecream.remove();
+        }, 1000); // 애니메이션 시간 후 삭제
+    });
+});  
+
+//////////////////////////////////////////////////////////////////////////////////////////
+document.addEventListener("DOMContentLoaded", () => {
     //회원 이름 가져오기
     const username = sessionStorage.getItem("username");  
     const welcomeText = document.getElementById("welcome-text");  //HTML 요소 가져오기
