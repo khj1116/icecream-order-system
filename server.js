@@ -136,8 +136,8 @@ app.post('/order', async(req, res) => {
 
          
             
-            console.log("주문 처리 완료! 응답 반홪 중...");
-            return res.status(200).json({ status: 'success', message: '주문이 성공적으로 처리되었습니다.' });
+            console.log("주문 처리 완료! 응답 반환 중...");
+            return res.status(200).json({ status: 'success', message: '주문이 성공적으로 접수되었습니다.' });
     
         } catch (error) {
             console.error('주문 처리 중 오류:', error);
@@ -398,16 +398,6 @@ app.get('/face-login', async (req, res) => {
         // **불필요한 로그 제거**
         user_id = user_id.split("\n").pop().trim();
          
-
-        // console.log(`얼굴 인식된 사용자 ID: '${user_id}'`);
-
-        // // 불필요한 경로 및 메시지 제거
-        // user_id = user_id.replace("얼굴 이미지 저장 완료:", "").trim();
-        // user_id = user_id.replace("/home/addinedu/icecream-order/face_recognition/output/compare_img.jpg", "").trim();
-
-        // console.log(`얼굴 인식된 사용자 ID: '${user_id}'`);
-
-        // 
         
          // DeepFace 로그가 아닌 경우만 처리
         if (!user_id || user_id.includes("Found") || user_id.includes("Searching") || user_id.includes("representations")) {

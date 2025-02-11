@@ -118,19 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
         
-        
-
-        // // 창 크기 변경 시 캔버스 크기 업데이트
-        // window.addEventListener('resize', () => {
-        //     canvas.width = window.innerWidth;
-        //     canvas.height = window.innerHeight;
-
-        //     particles.length = 0;  //기존 배열 초기화
-        //     for (let i = 0; i < 150; i++) {
-        //         particles.push(new Particle());   //새로운 파티클 추가
-        //     }
-        // });
-
+    
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // 주문 제출 이벤트
         const orderForm = document.getElementById('orderForm');
@@ -146,6 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const flavor = document.getElementById('flavor');
             const perform = document.getElementById('perform');
             const topping = document.getElementById('topping');
+            const message = document.getElementById('message');
 
             if (!flavor || !perform || !topping) {
                 console.error('필수 요소가 누락되었습니다. HTML 구조를 확인하세요.');
@@ -177,24 +166,45 @@ document.addEventListener("DOMContentLoaded", () => {
                     body: JSON.stringify(order),
                 });
 
-                if (response.ok) {
-                    
-                    message.textContent = currentLanguage === 'en'
-                        ? "Your order has been successfully placed!"
-                        : "주문이 성공적으로 접수되었습니다!";
-                    orderForm.reset();
+                console.log("서버 응답 상태:", response.status);
 
-                } else {
-                    message.textContent = currentLanguage === 'en'
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error("서버 응답 오류:", errorText);
+                    message.innerText = currentLanguage === 'en'
                         ? "Order submission failed."
                         : "주문 접수에 실패했습니다.";
+                    message.classList.add("error-message");
+                    return;
                 }
-                    
+        
+                const result = await response.json();
+                console.log("주문 성공:", result);
+        
+                // 주문 성공 메시지 표시
+                message.innerText = currentLanguage === 'en'
+                    ? "Your order has been successfully placed!"
+                    : "주문이 성공적으로 접수되었습니다!";
+                message.classList.add("success-message");
+        
+                // 일정 시간 후 메시지 사라지도록 설정 (예: 3초 후)
+                setTimeout(() => {
+                    message.innerText = "";
+                    message.classList.remove("success-message");
+                }, 3000);
+        
+                // 주문이 성공한 후에만 `orderSubmitted` 설정
+                sessionStorage.setItem("orderSubmitted", "true");
+        
+                // 폼 초기화
+                orderForm.reset();
+        
             } catch (error) {
-                message.textContent = currentLanguage === 'en' 
-                ? "Unable to connect to the server."
-                : "서버와 연결할 수 없습니다."; 
-                console.error('Error:', error);
+                console.error("주문 요청 중 오류 발생:", error);
+                message.innerText = currentLanguage === 'en' 
+                    ? "Unable to connect to the server."
+                    : "서버와 연결할 수 없습니다."; 
+                message.classList.add("error-message");
             }
         });
 
