@@ -1,3 +1,34 @@
+const translations = {
+    en: {
+        "welcome-text": "Welcome! I am Aris, the Ice Cream Robot!",
+        "flavor-label": "Choose Flavor:",
+        "perform-label": "Choose Performance:",
+        "topping-label": "Choose Topping:",
+        "submit-button": "Place Order",
+        "reset-button": "re-choice",
+        "languageButton": "한국어",
+        "toggle_font": "Large Font",
+        "recommend-title":"💡 Recommend Menu (Recent Orders)",
+        "no-orders": "No recent orders found."
+
+    },
+    ko: {
+        "welcome-text": "어서오세요! 아이스크림 로봇 Aris입니다!",
+        "flavor-label": "맛 선택:",
+        "perform-label": "퍼포먼스 선택:",
+        "topping-label": "토핑 선택:",
+        "submit-button": "주문하기",
+        "reset-button": "취소",
+        "languageButton": "English",
+        "toggle_font": "큰 글씨",
+        "recommend-title":"💡 추천 메뉴 (최근 주문)",
+        "no-orders": "최근 주문 내역이 없습니다."
+
+    }
+};
+
+let largeFontMode = sessionStorage.getItem("largeFontMode") === "true";
+let currentLanguage = sessionStorage.getItem("lauguage") || "ko";
 
 
 
@@ -6,35 +37,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const fontButton = document.getElementById('toggle_font');
 
 
-    let largeFontMode = sessionStorage.getItem("largeFontMode") === "true";
-    let currentLanguage = sessionStorage.getItem("lauguage") || "ko";
-
-    const translations = {
-        en: {
-            "welcome-text": "Welcome! I am Aris, the Ice Cream Robot!",
-            "flavor-label": "Choose Flavor:",
-            "perform-label": "Choose Performance:",
-            "topping-label": "Choose Topping:",
-            "submit-button": "Place Order",
-            "reset-button": "re-choice",
-            "registerButton": "Register Loyal Customer",
-            "languageButton": "한국어",
-            "toggle_font": "Large Font"
-
-        },
-        ko: {
-            "welcome-text": "어서오세요! 아이스크림 로봇 Aris입니다!",
-            "flavor-label": "맛 선택:",
-            "perform-label": "퍼포먼스 선택:",
-            "topping-label": "토핑 선택:",
-            "submit-button": "주문하기",
-            "reset-button": "취소",
-            "registerButton": "단골 손님 등록",
-            "languageButton": "English",
-            "toggle_font": "큰 글씨"
-
-        }
-    };
 
     //언어 업데이트 함수
     const updateLanguage = () => {
@@ -45,12 +47,32 @@ document.addEventListener("DOMContentLoaded", () => {
             if (element) element.textContent = texts[id];
         }
 
+         // Update options
+         document.querySelectorAll('option').forEach(option => {
+            const text = option.getAttribute(`data-${currentLanguage}`);
+            if (text) option.textContent = text;
+        });
+
         // 큰 글씨 버튼 텍스트 업데이트
         if (fontButton) {
             fontButton.textContent = largeFontMode
                 ?`${texts["toggle_font"]} OFF`
                 : texts["toggle_font"];
         }
+
+        // 추천 메뉴 제목 변경
+        const recommendTitle = document.querySelector("#recommendations h3");
+        if (recommendTitle) recommendTitle.textContent = texts["recommend-title"];
+
+        // 추천 메뉴 없을 때 메시지 변경
+        const recommendBox = document.querySelector("#recommendations p");
+        if (recommendBox && recommendBox.textContent.trim() === translations[currentLanguage === "ko" ? "en" : "ko"]["no-orders"]) {
+            recommendBox.textContent = texts["no-orders"];
+        }
+
+
+
+
 
         // 세션 스토리지에 현재 언어 저장 (새로고침해도 유지)
         sessionStorage.setItem("language", currentLanguage);
@@ -64,15 +86,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    //초기언어 적용
+    updateLanguage();
+
     //큰 글씨 모드 초기화 및 버튼 설정
     if (fontButton) {
         if (largeFontMode) {
             document.body.classList.add("large-font");
+            document.body.style.overflowY = "auto";
+        } else {
+            document.body.style.overflowY = "hidden";
         }
-
-        fontButton.textContent = largeFontMode
-            ? `${translations[currentLanguage]["toggle_font"]} OFF`
-            : translations[currentLanguage]["toggle_font"];
 
         // 큰 글씨 모드 버튼 클릭 이벤트
         fontButton.addEventListener("click", () => {
@@ -80,18 +104,60 @@ document.addEventListener("DOMContentLoaded", () => {
             document.body.classList.toggle("large-font", largeFontMode);
             sessionStorage.setItem("largeFontMode", largeFontMode);
 
-            fontButton.textContent = largeFontMode
-                ? `${translations[currentLanguage]["toggle_font"]} OFF`
-                : translations[currentLanguage]["toggle_font"];
+            if (largeFontMode) {
+                document.body.style.overflowY = "auto";
+                fontButton.textContent = `${translations[currentLanguage]["toggle_font"]} OFF`;
+
+                setTimeout(() => {
+                    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" });
+                }, 200);
+            } else {
+                document.body.style.overflowY = "hidden";
+                fontButton.textContent = translations[currentLanguage]["toggle_font"];
+            }
         });
     }
-
-    updateLanguage(); // 초기 언어 설정 반영
 });
-    
 
-        
+//최근 주문 내역을 토대로 주문 페이지에서 추천 메뉴로 표시
+document.addEventListener("DOMContentLoaded", async () => {
+    const user_id = sessionStorage.getItem("user_id"); // 현재 로그인한 회원 ID 가져오기
 
+    if (user_id) {
+        try {
+            const response = await fetch(`http://localhost:5000/api/recommendations/${user_id}`, { credentials: 'include' });
+            const data = await response.json();
+
+            if (data.error) {
+                console.error("추천 메뉴 불러오기 실패:", data.error);
+                return;
+            }
+
+            if (data.message) {
+                console.log(data.message);
+                return; // 추천 메뉴가 없으면 표시하지 않음
+            }
+
+            // 추천 메뉴를 주문 페이지에 표시
+            const recommendationContainer = document.getElementById("recommendations");
+            if (!recommendationContainer) {
+                console.warn("'recommendations' 요소를 찾을 수 없습니다.");
+                return;
+            }
+
+            let recommendationHTML = `<h3 id="recommend_title">${translations[currentLanguage]["recommend-title"]}</h3><ul>`;
+            data.forEach((order) => {
+                recommendationHTML += `<li>🍦 ${order.flavor} -  ${order.topping} (${order.orderType})</li>`;
+            });
+            recommendationHTML += `</ul>`;
+
+            recommendationContainer.innerHTML = recommendationHTML;
+
+        } catch (error) {
+            console.error("추천 메뉴 데이터 가져오기 오류:", error);
+        }
+    }
+});
 
 
 /////////////////////////////////////애니메이션//////////////////////////////////
@@ -286,45 +352,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
-//최근 주문 내역을 토대로 주문 페이지에서 추천 메뉴로 표시
-document.addEventListener("DOMContentLoaded", async () => {
-    const user_id = sessionStorage.getItem("user_id"); // 현재 로그인한 회원 ID 가져오기
 
-    if (user_id) {
-        try {
-            const response = await fetch(`http://localhost:5000/api/recommendations/${user_id}`, { credentials: 'include' });
-            const data = await response.json();
-
-            if (data.error) {
-                console.error("🚨 추천 메뉴 불러오기 실패:", data.error);
-                return;
-            }
-
-            if (data.message) {
-                console.log(data.message);
-                return; // 추천 메뉴가 없으면 표시하지 않음
-            }
-
-            // 📢 추천 메뉴를 주문 페이지에 표시
-            const recommendationContainer = document.getElementById("recommendations");
-            if (!recommendationContainer) {
-                console.warn("⚠️ 'recommendations' 요소를 찾을 수 없습니다.");
-                return;
-            }
-
-            let recommendationHTML = `<h3>추천 메뉴 (최근 주문)</h3><ul>`;
-            data.forEach((order) => {
-                recommendationHTML += `<li>🍦 ${order.flavor} -  ${order.topping} (${order.orderType})</li>`;
-            });
-            recommendationHTML += `</ul>`;
-
-            recommendationContainer.innerHTML = recommendationHTML;
-
-        } catch (error) {
-            console.error("추천 메뉴 데이터 가져오기 오류:", error);
-        }
-    }
-});
         
 
    
