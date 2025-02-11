@@ -9,7 +9,7 @@ const axios = require('axios'); //python api 호출을 위한 라이브러리
 const { Server } = require('socket.io');
 const path = require('path');
 const fs = require('fs');
-// const rclnodejs = require('rclnodejs'); ////////ROS2연결
+const rclnodejs = require('rclnodejs'); ////////ROS2연결
 
 
 
@@ -72,19 +72,34 @@ connection.connect((err) => {
         });
     }
 });
-
+///////////////////////ROS2 초기화 및 Publisher 생성/////////////////////
 let liveOrders = [];  //실시간 주문 데이터를 저장할 배열
+let rosNode;
+let publisher;
 
-// 주문 처리 (실시간 + 영구 저장)
+rclnodejs.init().then(() => {
+    console.log("ROS2 노드 초기화 완료!");
+
+    rosNode = new rclnodejs.Node('order_publisher');
+    publisher = rosNode.createPublisher('std_msgs/msg/String', '/order_topic');
+    console.log("ROS2 Publisher 생성 완료: /order_topic");
+
+    rclnodejs.spin(rosNode);
+}).catch(error => {
+    console.error("ROS2 초기화 오류:", error);
+});
+
+// 주문 처리 (실시간 + 영구 저장) 및 ROS2 메시지 발행
 app.post('/order', async(req, res) => {
     console.log('POST /order 요청 수신'); //요청 수신 확인 로그 추가
     
 
         // //클라이언트에서 받은 주문 데이터
         const { flavor, perform, topping, orderType, username, user_id } = req.body;
-        // console.log('서버에서 받은 주문 데이터:' , req.body);
+
 
         // orderType이 제공되지 않았을 경우 기본값 설정('hall')
+        const finalPerform = perform === 'None' ? '선택안함' : perform;
         const finalOrderType = orderType ? orderType : 'hall';
         const userIdValue = user_id ? user_id : null; //비회원이면 user_id를 null 처리
     
@@ -95,15 +110,25 @@ app.post('/order', async(req, res) => {
         }
 
         try {
+            //ROS2 메시지 발행
+            if (publisher) {
+                const msg = new (rclnodejs.require('std_msgs/msg/String'))();
+                msg.data = JSON.stringify({ flavor, topping }); 
+                console.log(`ROS2 PUBLISH: ${msg.data}`);
+                publisher.publish(msg);
+            } else {
+                console.error("ROS2 Publisher가 초기화되지 않았습니다.");
+            }
+
             // 실시간 주문 저장 (초기화 대상)(비회원도 가능하게 수정)
             const insertLiveOrder = 'INSERT INTO live_orders (flavor, perform, topping, orderType, customer_name, customer_id) VALUES (?, ?, ?, ?, ?, ?)';
-            await connection.promise().query(insertLiveOrder, [flavor, perform, topping, finalOrderType, username || "비회원", userIdValue]);
+            await connection.promise().query(insertLiveOrder, [flavor, finalPerform, topping, finalOrderType, username || "비회원", userIdValue]);
             
             // 영구 주문 저장(all_orders)
             const insertAllOrder = 'INSERT INTO all_orders (flavor, perform, topping, orderType, customer_name, customer_id) VALUES (?, ?, ?, ?, ?, ?)';
-            await connection.promise().query(insertAllOrder, [flavor, perform, topping, finalOrderType, username || "비회원", userIdValue]);
+            await connection.promise().query(insertAllOrder, [flavor, finalPerform, topping, finalOrderType, username || "비회원", userIdValue]);
     
-            console.log(`주문 처리 완료: ${flavor}, ${perform}, ${topping}, ${finalOrderType}, ${username || "비회원"}, ID: ${userIdValue}`);
+            console.log(`주문 처리 완료: ${flavor}, ${finalPerform}, ${topping}, ${finalOrderType}, ${username || "비회원"}, ID: ${userIdValue}`);
     
             // 실시간 주문 내역 최신화
             const [liveResults] = await connection.promise().query('SELECT * FROM live_orders ORDER BY id DESC');

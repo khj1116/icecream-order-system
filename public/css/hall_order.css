@@ -28,9 +28,11 @@ canvas {
 .container {
     background: rgba(255, 187, 0, 1); /*배경*/
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 15px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 300px;
+    width: 60%;
+    max-width: 600px;
+    margin: 0 auto;
     z-index: 1;
     position: relative;
 
