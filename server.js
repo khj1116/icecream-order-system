@@ -9,6 +9,7 @@ const axios = require('axios'); //python api 호출을 위한 라이브러리
 const { Server } = require('socket.io');
 const path = require('path');
 const fs = require('fs');
+// const rclnodejs = require('rclnodejs'); ////////ROS2연결
 
 
 
@@ -122,19 +123,6 @@ app.post('/order', async(req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 // 특정 회원의 최근 3개 주문 조회 API
 app.get('/api/recommendations/:user_id', async (req, res) => {
     const { user_id } = req.params;
@@ -159,7 +147,7 @@ app.get('/api/recommendations/:user_id', async (req, res) => {
 
         res.json(orders);
     } catch (error) {
-        console.error("❌ 최근 주문 조회 오류:", error);
+        console.error("최근 주문 조회 오류:", error);
         res.status(500).json({ error: "서버 오류가 발생했습니다." });
     }
 });
@@ -188,7 +176,7 @@ app.get('/api/live_orders', (req, res) => {
 app.get('/api/all_orders', (req, res) => {
     connection.query('SELECT * FROM all_orders ORDER BY created_at DESC', (err, results) => {
         if (err) {
-            console.error('❌ 모든 주문 내역 로드 실패:', err);
+            console.error('모든 주문 내역 로드 실패:', err);
             return res.status(500).json({ error: 'DB 오류' });
         }
         res.json(results);
@@ -232,10 +220,10 @@ io.on('connection', (socket) => {
             // 최신 주문 목록을 클라이언트에 전송
             const [liveResults] = await connection.promise().query('SELECT * FROM live_orders ORDER BY id DESC');
             io.emit('update_orders', liveResults);
-            console.log("✅ 주문이 실시간으로 업데이트되었습니다!");
+            console.log("주문이 실시간으로 업데이트되었습니다!");
 
         } catch (error) {
-            console.error('❌ 주문 데이터 삽입 중 오류 발생:', error);
+            console.error('주문 데이터 삽입 중 오류 발생:', error);
         }
     });
  
@@ -281,7 +269,7 @@ function saveBase64Image(base64Data, filename) {
 
 
     } catch (error) {
-        console.error("❌ 얼굴 이미지 저장 오류:", error);
+        console.error("얼굴 이미지 저장 오류:", error);
         return null;
     }
     
@@ -500,14 +488,6 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/order.html');
 });
 
-// // 회원 등록 페이지 라우팅
-// app.get('/customer_registration', (req, res) => {
-//     res.sendFile(__dirname + '/public/customer_registration.html');
-// });
-// // 회원 등록 페이지 라우팅
-// app.get('/customer_registration', (req, res) => {
-//     res.sendFile(__dirname + '/public/customer_registration.html');
-// });
 
 // 영구 주문 내역 페이지 라우팅
 app.get('/all_orders', (req, res) => {

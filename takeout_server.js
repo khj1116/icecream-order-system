@@ -159,7 +159,7 @@ app.post('/order', async(req, res) => {
         const sql = 'INSERT INTO takeout_orders (flavor, perform, topping, orderType, customer_name) VALUES (?, ?, ?, ?, ?)';
         await connection.promise().query(sql, [flavor, perform, topping, finalOrderType, username || "비회원"]);
 
-        console.log("✅ 포장 주문이 성공적으로 저장되었습니다!");
+        console.log("포장 주문이 성공적으로 저장되었습니다!");
 
         const forwardOrder = {
             flavor: req.body.flavor,
