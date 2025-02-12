@@ -1,48 +1,76 @@
+
+
+const translations = {
+    en: {
+        "flavor-label": "Choose Flavor:",
+        "perform-label": "Choose Performance:",
+        "topping-label": "Choose Topping:",
+        "submit-button": "Place Order",
+        "reset-button": "re-choice",
+        "languageButton": "한국어",
+        "ToppingType": "Choose Topping Type",
+        "topping_up": "topping on icecream",
+        "topping_under": "topping under icecream",
+        "recommend-title":"💡 Recommend Menu (Recent Orders)",
+        "no-orders": "No recent orders found.",
+        "welcome-text": "Welcome! I am Aris, the Ice Cream Robot!"
+
+    },
+    ko: {
+        "flavor-label": "맛 선택:",
+        "perform-label": "퍼포먼스 선택:",
+        "topping-label": "토핑 선택:",
+        "submit-button": "주문하기",
+        "reset-button": "취소",
+        "languageButton": "English",
+        "ToppingType": "주문 순서 선택",
+        "topping_up": "아이스크림 위에 토핑",
+        "topping_under": "아이스크림 밑에 토핑",
+        "recommend-title":"💡 추천 메뉴 (최근 주문)",
+        "no-orders": "최근 주문 내역이 없습니다.",
+        "welcome-text": "어서오세요! 아이스크림 로봇 Aris입니다!"
+
+    }
+};
+let currentLanguage = sessionStorage.getItem("language") || "ko";
+
 document.addEventListener("DOMContentLoaded", () => {
     const languageButton = document.getElementById('languageButton');
-    let currentLanguage = sessionStorage.getItem("language") || "ko";
 
-    const translations = {
-        en: {
-            "welcome-text": "Welcome! I am Aris, the Ice Cream Robot!",
-            "flavor-label": "Choose Flavor:",
-            "perform-label": "Choose Performance:",
-            "topping-label": "Choose Topping:",
-            "submit-button": "Place Order",
-            "reset-button": "re-choice",
-            "languageButton": "한국어",
-            "recommend-title":"💡 Recommend Menu (Recent Orders)",
-            "no-orders": "No recent orders found."
-
-        },
-        ko: {
-            "welcome-text": "어서오세요! 아이스크림 로봇 Aris입니다!",
-            "flavor-label": "맛 선택:",
-            "perform-label": "퍼포먼스 선택:",
-            "topping-label": "토핑 선택:",
-            "submit-button": "주문하기",
-            "reset-button": "취소",
-            "languageButton": "English",
-            "recommend-title":"💡 추천 메뉴 (최근 주문)",
-            "no-orders": "최근 주문 내역이 없습니다."
-
-        }
-    };
+    let texts = translations[currentLanguage]; // 전역 변수로 설정
+        
 
     //언어 업데이트 함수
     const updateLanguage = () => {
-        const texts = translations[currentLanguage];
 
+        //기존 텍스트 변경
+        texts = translations[currentLanguage];
+        //기존 텍스트 변경
         for (const id in texts) {
             const element = document.getElementById(id);
             if (element) element.textContent = texts[id];
         }
 
-         // Update options
-         document.querySelectorAll('option').forEach(option => {
+        // Update options
+        document.querySelectorAll('option').forEach(option => {
             const text = option.getAttribute(`data-${currentLanguage}`);
             if (text) option.textContent = text;
         });
+        ///////////////////////이미지 유지////////////////////////////////////
+        // 제조 순서 라벨 텍스트 변경 (이미지 유지)
+        document.querySelector(".order-sequence").innerHTML = `
+        <label id="topping_up" class="sequence-option">
+            <input type="radio" name="order_sequence" value="icecream_first" required>
+            <img src="/images/on.png" alt="${texts["topping_up"]}">
+            <span>${texts["topping_up"]}</span>
+        </label>
+
+        <label id="topping_under" class="sequence-option">
+            <input type="radio" name="order_sequence" value="topping_first" required>
+            <img src="/images/under.png" alt="${texts["topping_under"]}">
+            <span>${texts["topping_under"]}</span>
+        </label>
+        `;
 
 
         // 추천 메뉴 제목 변경
@@ -91,6 +119,9 @@ document.addEventListener("DOMContentLoaded", () => {
 });  
 
 //////////////////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////
 document.addEventListener("DOMContentLoaded", () => {
 
     let currentLanguage = sessionStorage.getItem("language") || "ko";
@@ -160,6 +191,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const topping = document.getElementById('topping');
         const user_id = sessionStorage.getItem("user_id");
         const username = sessionStorage.getItem("username");
+        const orderSequence = document.querySelector('input[name="order_sequence"]:checked');
+
 
         if (!flavor || !perform || !topping || !user_id) {
             console.error('필수 요소가 누락되었습니다. HTML 구조를 확인하세요.');
@@ -168,6 +201,11 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log('topping:', topping);
             console.log('user_id:', user_id)
            
+            return;
+        }
+        if (!orderSequence) {
+            message.textContent = "주문 순서를 선택해주세요!";
+            message.classList.add("error-message");
             return;
         }
 
@@ -179,7 +217,8 @@ document.addEventListener("DOMContentLoaded", () => {
             topping: topping.value,
             orderType: "packed",
             username: sessionStorage.getItem("username"),
-            user_id: sessionStorage.getItem("user_id")
+            user_id: sessionStorage.getItem("user_id"),
+            order_sequence: orderSequence.value,
         };
 
         console.log("서버로 전송할 주문 데이터:", order);
@@ -200,23 +239,40 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error("서버 응답 오류:", errorText);
-                message.textContent = `주문 접수 실패: ${errorText}`;
+                message.innerText = currentLanguage === 'en'
+                    ? "Order submission failed."
+                    : "주문 접수에 실패했습니다.";
+                message.classList.add("error-message");
                 return;
             }
 
             const result = await response.json();
             console.log("주문 성공:", result);
-            message.textContent = "주문이 성공적으로 접수되었습니다!";
+
+            // 주문 성공 메시지 표시
+            message.innerText = currentLanguage === 'en'
+                ? "Your order has been successfully placed!"
+                : "주문이 성공적으로 접수되었습니다!";
+            message.classList.add("success-message");
+
+            // 일정 시간 후 메시지 사라지도록 설정 (예: 3초 후)
+            setTimeout(() => {
+                message.textContent = "";
+                message.classList.remove("success-message");
+            }, 3000);
 
             // 주문이 성공한 후에만 `orderSubmitted` 설정
             sessionStorage.setItem("orderSubmitted", "true");
-
+            //폼 초기화
             orderForm.reset();
 
             
         } catch (error) {
             console.error("주문 요청 중 오류 발생:", error);
-            message.textContent = "서버와 연결할 수 없습니다.";
+            message.textContent = currentLanguage === 'en' 
+                ? "Unable to connect to the server."
+                : "서버와 연결할 수 없습니다."; 
+            message.classList.add("error-message");
         }
     });
 
