@@ -5,15 +5,17 @@ body {
     background-size: 400% 400%;
     animation: waveBg 6s infinite alternate ease-in-out;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: flex-start;
     align-items: center;
-    overflow: hidden;
+    overflow: auto;
     color: #000000;
     text-align: center;
     margin: 0;
     padding: 0;
     height: 100vh;
     position: relative;
+    min-height: 100vh;
 }
 
 /* 캔버스 스타일 */
@@ -203,4 +205,3 @@ button:hover {
 }
 
 
-/*커밋*/
