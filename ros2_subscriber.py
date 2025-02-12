@@ -16,7 +16,7 @@ class OrderSubscriber(Node):
     def listener_callback(self, msg):
         try:
             order_data = json.loads(msg.data)  # JSON 변환
-            self.get_logger().info(f'주문 수신 - 맛: {order_data["flavor"]}, 동작: {order_data["perform"]}, 토핑: {order_data["topping"]}, 타입: {order_data["finalOrderType"]}')
+            self.get_logger().info(f'주문 수신 - 맛: {order_data["flavor"]}, 동작: {order_data["perform"]}, 토핑: {order_data["topping"]}, 타입: {order_data["finalOrderType"]}, 순서: {order_data["order_sequence"]}')
         except Exception as e:
             self.get_logger().error(f'주문 데이터 처리 오류: {e}')
 

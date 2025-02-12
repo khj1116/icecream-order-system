@@ -31,7 +31,7 @@ app.use(cors(corsOptions));
 // Middleware 설정
 app.use(bodyParser.json({ limit: '50mb'})); //json 요청 본문 크기 제한 설정
 app.use(bodyParser.urlencoded( {limit: '50mb',extended: true })); // URL-encoded 데이터 크기 제한 설정
-app.use(express.static('public')); // Static 파일 제공
+app.use(express.static(path.join(__dirname, 'public'))); // Static 파일 제공
 
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -95,7 +95,7 @@ app.post('/order', async(req, res) => {
     
 
         // //클라이언트에서 받은 주문 데이터
-        const { flavor, perform, topping, orderType, username, user_id } = req.body;
+        const { flavor, perform, topping, orderType, username, user_id, order_sequence } = req.body;
 
 
         // orderType이 제공되지 않았을 경우 기본값 설정('hall')
@@ -104,7 +104,7 @@ app.post('/order', async(req, res) => {
         const userIdValue = user_id ? user_id : null; //비회원이면 user_id를 null 처리
     
         //필수 데이터 확인
-        if (!flavor || !perform || !topping || !finalOrderType) {
+        if (!flavor || !perform || !topping || !finalOrderType || !order_sequence) {
             console.error('필수 데이터가 누락되었습니다.', req.body);
             return res.status(400).json({ error: '주문 정보가 불완전합니다.' });
         }
@@ -113,7 +113,7 @@ app.post('/order', async(req, res) => {
             //ROS2 메시지 발행
             if (publisher) {
                 const msg = new (rclnodejs.require('std_msgs/msg/String'))();
-                msg.data = JSON.stringify({ flavor, perform, topping, finalOrderType }); 
+                msg.data = JSON.stringify({ flavor, perform, topping, finalOrderType, order_sequence }); 
                 console.log(`ROS2 PUBLISH: ${msg.data}`);
                 publisher.publish(msg);
             } else {

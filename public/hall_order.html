@@ -44,8 +44,21 @@
                 <option value="sunflower_seed" data-en="Sunflower Seed" data-ko="해바라기씨">해바라기씨</option>
             </select>
 
-           
+            <!-- 토핑 선택 아래에 추가 -->
+            <label for="order-sequence">제조 순서 선택:</label>
+            <div class="order-sequence">
+                <label id="topping_up" class="sequence-option">
+                    <input type="radio" name="order_sequence" value="icecream_first" required>
+                    <img src="/images/on.png" alt="아이스크림 위에 토핑">
+                    <span>아이스크림 위에 토핑</span>
+                </label>
 
+                <label id="topping_under" class="sequence-option">
+                    <input type="radio" name="order_sequence" value="topping_first" required>
+                    <img src="/images/under.png" alt="아이스크림 밑에 토핑">
+                    <span>아이스크림 밑에 토핑</span>
+                </label>
+            </div>
 
             <button id="submit-button" type="submit">주문하기</button>
             <button id="reset-button" type="reset">취소</button>

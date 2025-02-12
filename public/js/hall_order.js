@@ -13,6 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
             "topping-label": "Choose Topping:",
             "submit-button": "Place Order",
             "reset-button": "re-choice",
+            "topping_up": "topping on icecream",
+            "topping_under": "topping under icecream",
             "language-button": "한국어",
             "toggle_font": "Large font"
 
@@ -24,6 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
             "topping-label": "토핑 선택:",
             "submit-button": "주문하기",
             "reset-button": "취소",
+            "topping_up": "아이스크림 위에 토핑",
+            "topping_under": "아이스크림 밑에 토핑",
             "language-button": "English",
             "toggle_font": "큰 글씨"
 
@@ -34,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     //언어 업데이트 함수
     const updateLanguage = () => {
         const texts = translations[currentLanguage];
+        //기존 텍스트 변경
         for (const id in texts) {
             const element = document.getElementById(id);
             if (element) element.textContent = texts[id];
@@ -45,6 +50,21 @@ document.addEventListener("DOMContentLoaded", () => {
             if (text) option.textContent = text;
         });
 
+        // 제조 순서 라벨 텍스트 변경 (이미지 유지)
+        document.querySelector(".order-sequence").innerHTML = `
+        <label id="topping_up" class="sequence-option">
+            <input type="radio" name="order_sequence" value="icecream_first" required>
+            <img src="/images/on.png" alt="${texts["topping_up"]}">
+            <span>${texts["topping_up"]}</span>
+        </label>
+
+        <label id="topping_under" class="sequence-option">
+            <input type="radio" name="order_sequence" value="topping_first" required>
+            <img src="/images/under.png" alt="${texts["topping_under"]}">
+            <span>${texts["topping_under"]}</span>
+        </label>
+    `;
+
         //큰 글씨 버튼 텍스트 업데이트
         if (fontButton) {
             fontButton.textContent = largeFontMode
@@ -54,6 +74,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         //세션 스토리지에 현재 언어 저장(새로고침해도 유지)
         sessionStorage.setItem("language", currentLanguage);
+        console.log("언어 변경 완료:", currentLanguage);
+
     };
 
     //언어 변경 버튼 클릭 이벤트
@@ -117,6 +139,40 @@ document.addEventListener("DOMContentLoaded", () => {
                 }, 1000); // 애니메이션 시간 후 삭제
             });
         });
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        document.addEventListener("DOMContentLoaded", () => {
+            console.log("DOM 로드 완료");
+        
+            const orderSequenceDiv = document.querySelector(".order-sequence");
+        
+            if (!orderSequenceDiv) {
+                console.error("'order-sequence' 요소를 찾을 수 없음!");
+                return;
+            }
+
+            // 초기 이미지 추가 (언어에 따라 텍스트 설정)
+            const texts = translations[currentLanguage];
+
+        
+            // 이미지가 없을 경우 강제 추가
+            orderSequenceDiv.innerHTML = `
+                <label id="topping_up" class="sequence-option">
+                    <input type="radio" name="order_sequence" value="icecream_first" required>
+                    <img src="/images/on.png" alt="${texts["topping_up"]}">
+                    <span>${texts["topping_up"]}</span>
+                </label>
+        
+                <label id="topping_under" class="sequence-option">
+                    <input type="radio" name="order_sequence" value="topping_first" required>
+                    <img src="/images/under.png" alt="${texts["topping_under"]}">
+                    <span>${texts["topping_under"]}</span>
+                </label>
+            `;
+        
+            console.log("이미지 추가 완료!");
+        });
+        
         
     
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -137,6 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const perform = document.getElementById('perform');
             const topping = document.getElementById('topping');
             const message = document.getElementById('message');
+            const orderSequence = document.querySelector('input[name="order_sequence"]:checked');
 
             if (!flavor || !perform || !topping) {
                 console.error('필수 요소가 누락되었습니다. HTML 구조를 확인하세요.');
@@ -147,13 +204,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
+            if (!orderSequence) {
+                message.textContent = "주문 순서를 선택해주세요!";
+                message.classList.add("error-message");
+                return;
+            }
+
             //주문 데이터 구성
             const order = {
                 flavor: flavor.value,
                 perform: perform.value,
                 topping: topping.value,
                 orderType: 'hall',  //매장 또는 포장 주문 데이터 추가
-                username: null
+                username: null,
+                order_sequence: orderSequence.value, // 로보이 먼저 or 토핑 먼저
                   
             };
 
