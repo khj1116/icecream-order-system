@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
             webcam.srcObject = stream;
             console.log("웹캠 활성화 성공");
         } catch (error) {
-            console.error("🚨 웹캠 접근 오류:", error);
+            console.error("웹캠 접근 오류:", error);
             messageBox.textContent = "웹캠에 접근할 수 없습니다.";
         }
     }
@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
 
         try {
-            console.log("📡 회원가입 요청 전송 중...");
+            console.log("회원가입 요청 전송 중...");
             const response = await fetch("http://localhost:5000/register-user", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -145,6 +145,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 document.getElementById("goToLoginButton").addEventListener("click", function () {
-    window.location.href = "/login";  // ✅ login.html이 아니라 /login으로 요청
+    window.location.href = "/login";  // login.html이 아니라 /login으로 요청
 });
 

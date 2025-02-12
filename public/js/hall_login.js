@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById('loginForm');
     const guestOrderButton = document.getElementById("guestOrderButton");
     const registerButton = document.getElementById("client_registration");
-    const faceLoginButton = document.getElementById("faceLoginButton"); // 👤 얼굴 인식 로그인 버튼
+    const faceLoginButton = document.getElementById("faceLoginButton"); // 얼굴 인식 로그인 버튼
     const messageBox = document.getElementById("message")
 
 
@@ -72,7 +72,7 @@ if (faceLoginButton) {
                 if (data.success) {
                     sessionStorage.setItem("user_id", data.username); // 🔹 얼굴 인식 로그인 성공 시 user_id 저장
                     sessionStorage.setItem("username", data.username);
-                    alert(`✅ 얼굴 인식 로그인 성공! ${data.username}님`);
+                    alert(`얼굴 인식 로그인 성공! ${data.username}님`);
                     window.location.href = "/member_hall_order.html"; // 🔹 로그인 성공 시 이동
                 } else {
                     messageBox.textContent = "얼굴 인식 실패. 다시 시도하세요.";

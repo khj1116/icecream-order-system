@@ -3,12 +3,12 @@
 fetch('/api/all_orders')
     .then(response => response.json())
     .then(data => {
-        console.log("📥 영구 주문 내역 로드 완료", data);
+        console.log("영구 주문 내역 로드 완료", data);
 
         let allTableBody = document.getElementById("all-orders-table");
 
         if (!allTableBody) {
-            console.error("❌ 테이블을 찾을 수 없습니다.");
+            console.error("테이블을 찾을 수 없습니다.");
             return;
         }
 
@@ -30,4 +30,4 @@ fetch('/api/all_orders')
             allTableBody.innerHTML += row;
         });
     })
-    .catch(error => console.error("❌ 영구 주문 내역 로드 오류:", error));
+    .catch(error => console.error("영구 주문 내역 로드 오류:", error));

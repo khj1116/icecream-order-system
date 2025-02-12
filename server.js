@@ -231,7 +231,7 @@ io.on('connection', (socket) => {
     });
     // 클라이언트가 새로운 주문을 추가하면 실시간으로 업데이트
     socket.on('new_order', async (orderData) => {
-        console.log("🛒 클라이언트에서 주문 발생:", orderData);
+        console.log("클라이언트에서 주문 발생:", orderData);
 
         try {
             const insertLiveOrder = `
@@ -401,7 +401,7 @@ app.get('/face-login', async (req, res) => {
         
          // DeepFace 로그가 아닌 경우만 처리
         if (!user_id || user_id.includes("Found") || user_id.includes("Searching") || user_id.includes("representations")) {
-            console.log("❌ 얼굴 인식 실패: 매칭된 사용자 없음");
+            console.log("얼굴 인식 실패: 매칭된 사용자 없음");
             res.status(400).json({ success: false, message: "얼굴을 인식할 수 없습니다." });
             responseSent = true;
             return;
@@ -411,7 +411,7 @@ app.get('/face-login', async (req, res) => {
 
         // DB에서 회원 정보 확인
         try {
-            console.log(`🔍 DB에서 조회하는 user_id: '${user_id}'`);
+            console.log(`DB에서 조회하는 user_id: '${user_id}'`);
             const [rows] = await connection.promise().query(
                 "SELECT username FROM users WHERE user_id = ?",
                 [user_id]
@@ -447,7 +447,7 @@ app.get('/face-login', async (req, res) => {
             return; // 해당 오류는 무시
         }
 
-        console.error("❌ 얼굴 인식 오류 (상세 로그):", errorMessage);
+        console.error("얼굴 인식 오류 (상세 로그):", errorMessage);
 
         if (!responseSent) {
             responseSent = true;
@@ -459,7 +459,7 @@ app.get('/face-login', async (req, res) => {
     // Python 프로세스 종료 후 응답 반환
     pythonProcess.on('close', (code) => {
         if (!responseSent) {
-            console.error(`🚨 Python 얼굴 인식 프로세스 비정상 종료 (코드: ${code})`);
+            console.error(`Python 얼굴 인식 프로세스 비정상 종료 (코드: ${code})`);
             res.status(500).json({ success: false, message: "얼굴 인식 프로세스 종료 오류" });
             responseSent = true;
         }

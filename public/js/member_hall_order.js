@@ -310,12 +310,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                 } else {
 
                     const result = await response.json();
-                    console.log("✅ 주문 성공:", result);
+                    console.log("주문 성공:", result);
                     message.textContent = currentLanguage === 'en'
                     ? "Your order has been successfully placed!"
                     : "주문이 성공적으로 접수되었습니다!";
 
-                    // ✅ 주문이 성공한 후에만 `orderSubmitted` 설정
+                    // 주문이 성공한 후에만 `orderSubmitted` 설정
                     sessionStorage.setItem("orderSubmitted", "true");
                    
                     orderForm.reset();
@@ -346,7 +346,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     function updateOrderList(orders) {
         const orderTable = document.getElementById("order-list");
         if (!orderTable) {
-            console.error("❌ 'order-list' 요소를 찾을 수 없습니다.");
+            console.error("'order-list' 요소를 찾을 수 없습니다.");
             return;
         }
 

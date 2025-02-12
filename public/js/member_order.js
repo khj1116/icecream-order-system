@@ -136,10 +136,10 @@ document.addEventListener("DOMContentLoaded", () => {
         socket = io('http://localhost:5000/');
         console.log(" Socket.IO 연결 성공");
 
-        // 🔴 기존에 등록된 이벤트가 있다면 제거 (이중 등록 방지)
+        // 기존에 등록된 이벤트가 있다면 제거 (이중 등록 방지)
         socket.off("update_orders");
 
-        // ✅ 주문 내역 실시간 업데이트 리스너 등록
+        // 주문 내역 실시간 업데이트 리스너 등록
         socket.on("update_orders", (orders) => {
             console.log("🔄 실시간 주문 내역 업데이트 수신:", orders);
             updateOrderList(orders);
@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     } else {
-        console.error("❌ Socket.IO가 로드되지 않았습니다. HTML에 `<script src='https://cdn.socket.io/4.0.1/socket.io.min.js'></script>` 추가하세요.");
+        console.error("Socket.IO가 로드되지 않았습니다. HTML에 `<script src='https://cdn.socket.io/4.0.1/socket.io.min.js'></script>` 추가하세요.");
         return; // ⚠️ Socket.IO가 없으면 실행 중단
     }
 
@@ -199,24 +199,24 @@ document.addEventListener("DOMContentLoaded", () => {
     
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error("❌ 서버 응답 오류:", errorText);
-                message.textContent = `❌ 주문 접수 실패: ${errorText}`;
+                console.error("서버 응답 오류:", errorText);
+                message.textContent = `주문 접수 실패: ${errorText}`;
                 return;
             }
 
             const result = await response.json();
-            console.log("✅ 주문 성공:", result);
+            console.log("주문 성공:", result);
             message.textContent = "주문이 성공적으로 접수되었습니다!";
 
-            // ✅ 주문이 성공한 후에만 `orderSubmitted` 설정
+            // 주문이 성공한 후에만 `orderSubmitted` 설정
             sessionStorage.setItem("orderSubmitted", "true");
 
             orderForm.reset();
 
             
         } catch (error) {
-            console.error("🚨 주문 요청 중 오류 발생:", error);
-            message.textContent = "❌ 서버와 연결할 수 없습니다.";
+            console.error("주문 요청 중 오류 발생:", error);
+            message.textContent = "서버와 연결할 수 없습니다.";
         }
     });
 
@@ -237,7 +237,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateOrderList(orders) {
         const orderTable = document.getElementById("order-list");
         if (!orderTable) {
-            console.error("❌ 'order-list' 요소를 찾을 수 없습니다.");
+            console.error("'order-list' 요소를 찾을 수 없습니다.");
             return;
         }
 
@@ -268,7 +268,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const data = await response.json();
 
             if (data.error) {
-                console.error("🚨 추천 메뉴 불러오기 실패:", data.error);
+                console.error("추천 메뉴 불러오기 실패:", data.error);
                 return;
             }
 
@@ -277,7 +277,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 return; // 추천 메뉴가 없으면 표시하지 않음
             }
 
-            // 📢 추천 메뉴를 주문 페이지에 표시
+            // 추천 메뉴를 주문 페이지에 표시
             const recommendationContainer = document.getElementById("recommendations");
             if (!recommendationContainer) {
                 console.warn("⚠️ 'recommendations' 요소를 찾을 수 없습니다.");

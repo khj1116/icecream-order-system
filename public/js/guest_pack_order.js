@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
             user_id: null
         };
     
-        console.log("📤 서버로 전송할 주문 데이터:", order);
+        console.log("서버로 전송할 주문 데이터:", order);
     
         try {
             const response = await fetch("http://localhost:5000/order", {
