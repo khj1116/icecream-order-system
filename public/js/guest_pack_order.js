@@ -138,7 +138,7 @@ const languageButton = document.getElementById('languageButton');
                 "languageButton": "한국어"
             },
             ko: {
-                "welcome-text": "어서오세요! 아이스크림 로봇 Aris입니다!",
+                "guest-order": "포장 주문 페이지",
                 "flavor-label": "맛 선택:",
                 "perform-label": "퍼포먼스 선택:",
                 "topping-label": "토핑 선택:",
