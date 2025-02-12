@@ -113,7 +113,7 @@ app.post('/order', async(req, res) => {
             //ROS2 메시지 발행
             if (publisher) {
                 const msg = new (rclnodejs.require('std_msgs/msg/String'))();
-                msg.data = JSON.stringify({ flavor, topping }); 
+                msg.data = JSON.stringify({ flavor, perform, topping, finalOrderType }); 
                 console.log(`ROS2 PUBLISH: ${msg.data}`);
                 publisher.publish(msg);
             } else {
