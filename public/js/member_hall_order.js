@@ -213,7 +213,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     });  
 ///////////////////////////////////////////////////////////////////////////
-//////d이미지 추가 코드////////////////////////
+//////////////////////////////////////이미지 추가 코드////////////////////////
 document.addEventListener("DOMContentLoaded", () => {
     console.log("DOM 로드 완료");
 
@@ -302,7 +302,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         } else {
-            console.error("❌ Socket.IO가 로드되지 않았습니다. HTML에 `<script src='https://cdn.socket.io/4.0.1/socket.io.min.js'></script>` 추가하세요.");
+            console.error("Socket.IO가 로드되지 않았습니다. HTML에 `<script src='https://cdn.socket.io/4.0.1/socket.io.min.js'></script>` 추가하세요.");
             return; // ⚠️ Socket.IO가 없으면 실행 중단
         }
 

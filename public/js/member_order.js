@@ -1,5 +1,4 @@
 
-
 const translations = {
     en: {
         "flavor-label": "Choose Flavor:",
@@ -45,10 +44,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         //기존 텍스트 변경
         texts = translations[currentLanguage];
+
         //기존 텍스트 변경
         for (const id in texts) {
-            const element = document.getElementById(id);
-            if (element) element.textContent = texts[id];
+            if (id !== "welcome-text") { // "welcome-text" 제외
+                const element = document.getElementById(id);
+                if (element) element.textContent = texts[id];
+            }
         }
 
         // Update options
@@ -56,6 +58,15 @@ document.addEventListener("DOMContentLoaded", () => {
             const text = option.getAttribute(`data-${currentLanguage}`);
             if (text) option.textContent = text;
         });
+        // 로그인한 회원 이름도 업데이트
+        const usernameDisplay = document.getElementById("welcome-text");
+        const username = sessionStorage.getItem("username");
+
+        if (usernameDisplay && username) {
+            usernameDisplay.textContent = currentLanguage === "ko"
+                ? `${username} 회원님! 안녕하세요.`
+                : `Hello, ${username}! Welcome!`;
+        }
         ///////////////////////이미지 유지////////////////////////////////////
         // 제조 순서 라벨 텍스트 변경 (이미지 유지)
         document.querySelector(".order-sequence").innerHTML = `
@@ -120,8 +131,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-
-/////////////////////////////////////////////////////////////////////////
 document.addEventListener("DOMContentLoaded", () => {
 
     let currentLanguage = sessionStorage.getItem("language") || "ko";
@@ -377,4 +386,3 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
     
-    /*커밋*/
