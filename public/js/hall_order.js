@@ -125,6 +125,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const message = document.getElementById('message');
         const registerButton = document.getElementById('registerButton');
 
+        let currentLanguage = sessionStorage.getItem("language") || "ko";
+
        
         orderForm.addEventListener('submit', async (event) => {
             event.preventDefault();
@@ -176,103 +178,43 @@ document.addEventListener("DOMContentLoaded", () => {
                         : "주문 접수에 실패했습니다.";
                     message.classList.add("error-message");
                     return;
-                }
+                } 
+                    const result = await response.json();
+                    console.log("주문 성공:", result);
         
-                const result = await response.json();
-                console.log("주문 성공:", result);
+                    // 주문 성공 메시지 표시
+                    message.innerText = currentLanguage === 'en'
+                        ? "Your order has been successfully placed!"
+                        : "주문이 성공적으로 접수되었습니다!";
+                    message.classList.add("success-message");
         
-                // 주문 성공 메시지 표시
-                message.innerText = currentLanguage === 'en'
-                    ? "Your order has been successfully placed!"
-                    : "주문이 성공적으로 접수되었습니다!";
-                message.classList.add("success-message");
+                    // 일정 시간 후 메시지 사라지도록 설정 (예: 3초 후)
+                    setTimeout(() => {
+                        message.textContent = "";
+                        message.classList.remove("success-message");
+                    }, 3000);
         
-                // 일정 시간 후 메시지 사라지도록 설정 (예: 3초 후)
-                setTimeout(() => {
-                    message.innerText = "";
-                    message.classList.remove("success-message");
-                }, 3000);
+                    // 주문이 성공한 후에만 `orderSubmitted` 설정
+                    sessionStorage.setItem("orderSubmitted", "true");
         
-                // 주문이 성공한 후에만 `orderSubmitted` 설정
-                sessionStorage.setItem("orderSubmitted", "true");
-        
-                // 폼 초기화
-                orderForm.reset();
-        
+                    // 폼 초기화
+                    orderForm.reset();
+
+                
             } catch (error) {
                 console.error("주문 요청 중 오류 발생:", error);
-                message.innerText = currentLanguage === 'en' 
+                message.textContent = currentLanguage === 'en' 
                     ? "Unable to connect to the server."
                     : "서버와 연결할 수 없습니다."; 
                 message.classList.add("error-message");
             }
         });
 
-        //회원 접속 시 환영 메시지 표시
-        window.addEventListener('DOMContentLoaded', () => {
-            const params = new URLSearchParams(window.location.search);
-            const username = params.get('username');
         
-            if (username) {
-                const welcomeMessage = document.getElementById('welcome-message');
-                welcomeMessage.textContent = `${username}님! 안녕하세요`;
-            }
-        });
-
-        /*커밋*/
-
-        document.addEventListener("DOMContentLoaded", async () => {
-            const usernameDisplay = document.getElementById("username");
-            const recommendationBox = document.getElementById("recommendations");
-        
-            // 저장된 user_id 가져오기
-            const userId = sessionStorage.getItem("user_id");
-        
-            if (!userId) {
-                console.error("로그인된 사용자 정보 없음!");
-                return;
-            }
-        
-            console.log(`🔍 로그인한 사용자: ${userId}`);
-        
-            // 🔹 회원 정보 가져오기
-            try {
-                const response = await fetch(`http://localhost:5000/api/get-user-info/${userId}`);
-                const data = await response.json();
-        
-                if (data.success) {
-                    usernameDisplay.textContent = `${data.username}님! 안녕하세요!`;
-                } else {
-                    console.error("회원 정보 로드 실패:", data.message);
-                }
-            } catch (error) {
-                console.error("회원 정보 요청 오류:", error);
-            }
-        
-            // 🔹 추천 메뉴 가져오기
-            try {
-                const res = await fetch(`http://localhost:5000/api/recommendations/${userId}`);
-                const menuData = await res.json();
-        
-                if (menuData.length > 0) {
-                    recommendationBox.innerHTML = `
-                        <h3>🍨 ${userId}님의 추천 메뉴</h3>
-                        <ul>
-                            ${menuData.map(item => `<li>${item.flavor} + ${item.perform} + ${item.topping}</li>`).join('')}
-                        </ul>
-                    `;
-                } else {
-                    recommendationBox.innerHTML = `<p>최근 주문 내역이 없습니다.</p>`;
-                }
-            } catch (error) {
-                console.error("추천 메뉴 요청 오류:", error);
-            }
-        });
-
 
         document.addEventListener("DOMContentLoaded", () => {
             const orderForm = document.getElementById('orderForm');
-            const message = document.getElementById('message');
+            // const message = document.getElementById('message');
             const resetButton = document.getElementById('reset-button');
             let currentLanguage = 'ko';
 
@@ -302,6 +244,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 }, 1000);
             });
         });
+
+        
 
 
 

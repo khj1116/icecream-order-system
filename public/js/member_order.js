@@ -206,7 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const result = await response.json();
             console.log("✅ 주문 성공:", result);
-            message.textContent = "✅ 주문이 성공적으로 접수되었습니다!";
+            message.textContent = "주문이 성공적으로 접수되었습니다!";
 
             // ✅ 주문이 성공한 후에만 `orderSubmitted` 설정
             sessionStorage.setItem("orderSubmitted", "true");
