@@ -145,9 +145,6 @@ app.post('/order', async(req, res) => {
         }
     });
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
 // 특정 회원의 최근 3개 주문 조회 API
 app.get('/api/recommendations/:user_id', async (req, res) => {
     const { user_id } = req.params;
@@ -211,9 +208,6 @@ app.get('/api/all_orders', (req, res) => {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
-
-
 // Socket.IO 연결 이벤트
 io.on('connection', (socket) => {
     console.log(`클라이언트(${socket.id})가 연결되었습니다.`);
@@ -269,9 +263,6 @@ const storage = multer.diskStorage({
     }
 });
 const upload = multer({ storage });
-
-
-
 
 
 
@@ -336,11 +327,6 @@ app.post('/register-user', async (req, res) => {
         res.status(500).json({ success: false, message: "서버 오류 발생" });
     }   
 });
-
-
-
-
-
 
 
 
@@ -465,14 +451,6 @@ app.get('/face-login', async (req, res) => {
         }
     });
 });
-
-
-
-
-
-
-
-
 
 
 // 로그인 엔드포인트

@@ -2,7 +2,6 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 import json
-
 class OrderSubscriber(Node):
     def __init__(self):
         super().__init__('order_subscriber')
@@ -75,9 +74,6 @@ class OrderSubscriber(Node):
                 주문형태({finalOrderType}) = {self.finalOrderType},
                 제조순서({order_sequence}) = {self.order_sequence}""")
                                        
-                                       
-                                       
-
                 # 주문 상태를 "processing"으로 변경하여 다음 단계 진행 가능
                 self.state = "wait"
 
