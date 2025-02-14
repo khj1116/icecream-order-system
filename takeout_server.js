@@ -1,22 +1,25 @@
-//이 서버 코드의 기능//
-//포장 주문 관련 기능(포장 주문 DB에 저장)
-//포장 주문 로그인 처리(/login, /check-login, /logout)
-//포장 주문을 메인서버(server.js 5000번 포트로 전송, 주문내역 동기화)
-////////////////////////////////////////////////////////////////////
+//이 코드의 기능//
+//포장 주문(take-out) 관리 서버를 구현한 Node.js 기반 Express 서버, 포장 주문을 메인서버(server.js 5000번 포트로 전송, 주문내역 동기화)
+//주요 기능
+//포장 주문 처리(포장 주문 DB에 저장)
+//사용자 인증(로그인, 회원가입)
+//DB 연동
+//CORS 설정(클라이언트 localhost:5000, localhost:5002와 서버 간 요청 허용)
+//정적 파일 제공
+
+/////////////////////////////////////서버 초기 설정//////////////////////////////////////
 const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
+const bodyParser = require('body-parser');//JSON 데이터 파싱
+const cors = require('cors');//CORS 설정(도메인 간 요청 허용)
 const path = require('path');
 const mysql = require('mysql2');
-const bcrypt = require('bcrypt');
-const session = require('express-session');  
+const bcrypt = require('bcrypt');//비밀번호 해싱
+const session = require('express-session');//사용자 세션 관리
 const saltRounds = 10; //해싱 강도
-
-
 const app = express();
 const PORT = 5002;
 
-///////express-session 설정 추가////////
+////////////////////////////////////express-session 설정 추가////////////////////////////
 app.use(session({
     secret: 'addinedu',  //세션 암호화 키(보안 유의)
     resave: false,
@@ -25,7 +28,7 @@ app.use(session({
 
 }));
 
-// MySQL 연결 설정////////////////////////////////////
+// /////////////////////////////////MySQL 연결 설정//////////////////////////////////////
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'khj',
@@ -40,8 +43,8 @@ connection.connect((err) => {
         console.log('MySQL 연결 성공');
     }
 });
-////////////////////////////////////////////////////
-// Middleware 설정
+
+///////////////////////////////////// Middleware 설정////////////////////////////////////
 app.use(bodyParser.json());
 app.use(cors({
     origin: ['http://localhost:5000','http://localhost:5002'], //클라이언트 도메인
@@ -55,7 +58,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'takeout_order.html'));
 });
 
-// 로그인 엔드포인트
+/////////////////////////////////////// 로그인 엔드포인트///////////////////////////////////
 app.post('/login', async (req, res) => {
     const { user_id, password } = req.body;
 
@@ -85,9 +88,9 @@ app.post('/login', async (req, res) => {
     });
 });
 
-// 회원가입 엔드포인트 추가
+//////////////////////////////////////회원가입 엔드포인트 추가////////////////////////////////
 app.post('/api/register', async (req, res) => {
-    const { username, user_id, password, confirm_password } = req.body;
+    const { username, user_id, password, confirm_password } = req.body;   //비밀번호 확인(confirm_password) 필드 추가
 
     if (!username || !user_id || !password || !confirm_password) {
         return res.status(400).json({ success: false, message: "모든 필드를 입력해주세요." });
@@ -117,8 +120,10 @@ app.post('/api/register', async (req, res) => {
         res.status(500).json({ success: false, message: "서버 오류가 발생했습니다." });
     }
 });
-
-// 로그인 상태 확인 API
+///////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////로그인 상태 확인 API//////////////////////////////////
+//현재 로그인한 사용자 정보를 반환
+//세션이 있으면 로그인된 상태
 app.get('/check-login', (req, res) => {
     if (req.session.user) {
         res.json({ success: true, user: req.session.user });
@@ -133,7 +138,8 @@ app.get('/login', (req, res) => {
 });
 
 
-// 로그아웃 엔드포인트 추가
+//로그아웃 엔드포인트 추가
+//세션을 삭제하여 로그아웃 처리
 app.post('/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) {
@@ -143,7 +149,7 @@ app.post('/logout', (req, res) => {
     });
 });
 
-
+///////////////////////////////////////포장 주문 처리//////////////////////////////////////////
 app.post('/order', async(req, res) => {
     console.log('포장 주문 요청 수신:', req.body);
 
@@ -155,7 +161,7 @@ app.post('/order', async(req, res) => {
     }
 
     try {
-        // 1️⃣ 포장 주문을 `5002`의 DB에 저장
+        // 포장 주문을 `5002`번 포트의 DB에 저장
         const sql = 'INSERT INTO takeout_orders (flavor, perform, topping, orderType, customer_name) VALUES (?, ?, ?, ?, ?)';
         await connection.promise().query(sql, [flavor, perform, topping, finalOrderType, username || "비회원"]);
 
@@ -167,10 +173,10 @@ app.post('/order', async(req, res) => {
             topping: req.body.topping,
             orderType: req.body.orderType || "packed",
             username: req.body.username || "비회원",
-            user_id: req.body.user_id || null  // 비회원의 경우 user_id를 null로 설정
+            user_id: req.body.user_id || null  // 비회원의 경우 user_id를 null 설정
         };
 
-        // 2️⃣ `5000` 서버로 주문 데이터 전송
+        //`5000`번 포트의 메인 서버로 주문 데이터 전송
         const forwardResponse = await fetch('http://localhost:5000/order', {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
@@ -181,7 +187,7 @@ app.post('/order', async(req, res) => {
             throw new Error("5000 서버로 주문 데이터 전달 실패");
         }
 
-        console.log("✅ 실시간 주문 내역 서버(5000)로 주문이 전송되었습니다!");
+        console.log("실시간 주문 내역 서버(5000)로 주문이 전송되었습니다!");
         res.status(200).json({ message: "포장 주문 성공 및 실시간 주문 내역 반영 완료!" });
 
     } catch (error) {
@@ -190,13 +196,6 @@ app.post('/order', async(req, res) => {
     }
 });
 
-
-
-
-
-
-    
-   
 
 // 서버 실행
 app.listen(PORT, () => {
