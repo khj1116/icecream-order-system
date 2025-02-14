@@ -3,11 +3,11 @@ body {
     font-family: 'Baloo 2', cursive;
     margin: 0;
     padding: 0;
-    height: 100vh;
+    height: 100vh; /*화면 전체를 사용하여 로그인 UI를 화면 중앙에 배치*/
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(-45deg, #9900fff3, #eb7aaf);
+    background: linear-gradient(-45deg, #9900fff3, #eb7aaf);/*배경이 물결처럼 움직이는 애니메이션 적용*/
     background-size: 400% 400%;
     position: relative;
     overflow: hidden;
@@ -141,7 +141,7 @@ button {
 
 button:hover {
     background: #eb7aaf;
-    transform: scale(1.05);
+    transform: scale(1.05); /*마우스를 올리면 버튼이 커지는 효과*/
 }
 
 /* 큰 글씨 모드 시 스크롤 가능 */
