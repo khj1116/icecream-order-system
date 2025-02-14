@@ -1,15 +1,27 @@
-//커밋//
+//이 코드의 기능//
+
+//주요 기능
+//주문 관리(실시간 + 영구 저장)
+//ROS2 연동 주문(주문 데이터 전송)
+//Socket.IO를 이용한 실시간 주문 내역 업데이트
+//사용자 인증(로그인, 회원가입)
+//회원 추천 주문 기능
+//MySQL DB 연동
+//CORS 설정
+//파일 업로드 기능
+////////////////////////////////////////////서버 초기 설정/////////////////////////////////////////
+//Node.js 백엔드 환경 구축을 위한 라이브러리 설정
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const multer = require('multer');
+const multer = require('multer');//파일 업로드(회원가입 시 얼굴 이미지 저장)
 const http = require('http');
 const mysql = require('mysql2');
 const axios = require('axios'); //python api 호출을 위한 라이브러리
 const { Server } = require('socket.io');
 const path = require('path');
 const fs = require('fs');
-const rclnodejs = require('rclnodejs'); ////////ROS2연결
+const rclnodejs = require('rclnodejs'); //ROS2연결
 
 
 
@@ -17,18 +29,18 @@ const app = express();
 const PORT = 5000;
 const server = http.createServer(app); //기존 express 앱을 http 서버로 래핑
 
-//cors 설정 추가
+////////////////////////////////////////////CORS 설정 추가/////////////////////////////////////////
+//클라이언트(5002)와 서버(5000) 간 요청 허용
 const corsOptions = {
     origin: ['http://localhost:5002', 'http://localhost:5000'], // 5002, 5000 모두 허용
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type'],
     credentials: true
 };
-
-
 app.use(cors(corsOptions));
+////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////Middleware 설정//////////////////////////////////////
 
-// Middleware 설정
 app.use(bodyParser.json({ limit: '50mb'})); //json 요청 본문 크기 제한 설정
 app.use(bodyParser.urlencoded( {limit: '50mb',extended: true })); // URL-encoded 데이터 크기 제한 설정
 app.use(express.static(path.join(__dirname, 'public'))); // Static 파일 제공
@@ -46,7 +58,7 @@ const io = new Server(server, {
 });
 
 
-///////////////////SQL/////////////////////////////////////////////
+//////////////////////////////////////////MySQL 연결 및 초기화//////////////////////////////////////
 // MySQL 연결 설정
 const connection = mysql.createConnection({
     host: 'localhost', // MySQL 서버 주소
@@ -63,7 +75,7 @@ connection.connect((err) => {
         console.log('MySQL에 성공적으로 연결되었습니다.');
 
         // 주문 내역 초기화 로직 수정
-        connection.query('TRUNCATE TABLE live_orders', (err, result) => {
+        connection.query('TRUNCATE TABLE live_orders', (err, result) => {  //서버 재시작시 실시간 주문 내역 초기화(매장 직원이 주문을 확인하는 용도)
             if (err) {
                 console.error('실시간 주문 테이블 초기화 실패:', err);
             } else {
@@ -72,7 +84,7 @@ connection.connect((err) => {
         });
     }
 });
-///////////////////////ROS2 초기화 및 Publisher 생성/////////////////////
+//////////////////////////////////////ROS2 초기화 및 Publisher 생성//////////////////////////////////
 let liveOrders = [];  //실시간 주문 데이터를 저장할 배열
 let rosNode;
 let publisher;
@@ -89,7 +101,8 @@ rclnodejs.init().then(() => {
     console.error("ROS2 초기화 오류:", error);
 });
 
-// 주문 처리 (실시간 + 영구 저장) 및 ROS2 메시지 발행
+//////////////////////////////주문 처리 (실시간 + 영구 저장) 및 ROS2 메시지 발행//////////////////////////
+//ROS2에 주문 데이터 전송, SQL에 주문 저장, 실시간으로 클라이언트에 주문 내역 전송(Socket.IO 사용)
 app.post('/order', async(req, res) => {
     console.log('POST /order 요청 수신'); //요청 수신 확인 로그 추가
     
@@ -144,8 +157,8 @@ app.post('/order', async(req, res) => {
             return res.status(500).json({ error: '서버 오류가 발생했습니다.' });
         }
     });
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// 특정 회원의 최근 3개 주문 조회 API
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////특정 회원의 최근 3개 주문 조회 API///////////////////////////////
 app.get('/api/recommendations/:user_id', async (req, res) => {
     const { user_id } = req.params;
 
@@ -173,7 +186,7 @@ app.get('/api/recommendations/:user_id', async (req, res) => {
         res.status(500).json({ error: "서버 오류가 발생했습니다." });
     }
 });
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 // favicon.ico 요청 무시 (404 에러 방지)
@@ -207,8 +220,7 @@ app.get('/api/all_orders', (req, res) => {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-// Socket.IO 연결 이벤트
+/////////////////////////////////////////// Socket.IO 연결 이벤트(실시간 주문 내역 전송)///////////////////////////////////
 io.on('connection', (socket) => {
     console.log(`클라이언트(${socket.id})가 연결되었습니다.`);
 
@@ -248,7 +260,7 @@ io.on('connection', (socket) => {
  
 });
 
-//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // 이미지 저장 폴더 설정
 const storage = multer.diskStorage({
@@ -330,7 +342,7 @@ app.post('/register-user', async (req, res) => {
 
 
 
-///////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // `/orders.html` 요청 처리
 app.get('/orders', (req, res) => {
@@ -341,7 +353,9 @@ app.get('/order', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'hall_order.html'));
 });
 
-//로그인 API
+//////////////////////////////////////////////////로그인 API////////////////////////////////////////////
+// face_login.py 실행하여 얼굴 인식 후 DB에서 사용자 조회
+// 매칭된 사용자가 있으면 로그인 성공!
 app.get('/face-login', async (req, res) => {
     const { spawn } = require('child_process');
 
@@ -466,7 +480,7 @@ app.post('/login', (req, res) => {
     }
 });
 
-/////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 //포장 주문 페이지 라우팅
