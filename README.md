@@ -40,7 +40,12 @@
   + 주문 동기화 : 포장 주문 서버와 메인 서버 간 데이터 통합
  
 
-    
++ FACE ID 주문
+
+
+![Image](https://github.com/user-attachments/assets/6425bd51-bd0d-420b-b912-07c3d897a0d4)
+
+
 + 큰 글씨모드 제공을 통한 사용자 경험 제공
 
 
