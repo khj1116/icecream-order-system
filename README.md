@@ -64,6 +64,10 @@
 
 
 https://github.com/user-attachments/assets/e7b77822-29d7-4137-9442-1265355ab86d
+
++ 포장 주문 후 아이스크림 제조
+
+https://github.com/user-attachments/assets/3fba2deb-5ba2-4692-ad41-b80691cccf38
 ---
 ## Improvements
 + FRONT_END
