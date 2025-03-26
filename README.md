@@ -38,12 +38,25 @@
   + 실시간 주문 관리 : ROS2 및 Socket I.O로 로봇팔과 클라이언트 동기화
   + 사용자 인증 : 다양한 로그인 옵션과 보안 강화(비밀번호 해싱, 세션)
   + 주문 동기화 : 포장 주문 서버와 메인 서버 간 데이터 통합
+ 
+
+    
++ 큰 글씨모드 제공을 통한 사용자 경험 제공
+
 
 ![Image](https://github.com/user-attachments/assets/ba3b9ccc-ad7e-40a2-819c-87a3030cdf9b)
++ 매장 주문 페이지 주문 및 실시간 주문 내역 페이지 연동(매장 빌지 역할)
+
 
 ![Image](https://github.com/user-attachments/assets/36bb9609-c7be-4d89-b90c-352103ce6fec)
 
-https://github.com/user-attachments/assets/20340887-1254-4fe9-a362-3fe8cf570b19
+
++ 영어 지원을 통한 사용자 경험 제공
+
+
+![Image](https://github.com/user-attachments/assets/21be9ee2-b53f-4bad-aef0-fc5f4f45b9ce)
++ 포장 주문 페이지 주문 및 실시간 주문 내역 페이지 연동
+
 
 https://github.com/user-attachments/assets/e7b77822-29d7-4137-9442-1265355ab86d
 ---
